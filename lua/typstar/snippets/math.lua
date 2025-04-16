@@ -39,6 +39,7 @@ return {
     snip('oak', 'plus.circle ', {}, math),
     snip('bak', 'plus.square ', {}, math),
     snip('mak', 'plus.minus ', {}, math),
+    snip('nab', 'arrow(nabla) ', {}, math), -- add nabla
     snip('xx', 'times ', {}, math, 900),
     snip('oxx', 'times.circle ', {}, math),
     snip('bxx', 'times.square ', {}, math),
@@ -77,6 +78,9 @@ return {
 
     snip('dx', 'dif / (dif <>) ', { i(1, 'x') }, math, 900),
     snip('ddx', '(dif <>) / (dif <>) ', { i(1, 'f'), i(2, 'x') }, math),
+    snip('px', 'partial / (partial <>) ', { i(1, 'x') }, math, 900), -- add partials
+    snip('ppx', '(partial <>) / (partial <>) ', { i(1, 'f'), i(2, 'x') }, math),
+
     snip('it', 'integral ', {}, math, 900),
     snip('int', 'integral_(<>)^(<>) ', { i(1, 'a'), i(2, 'b') }, math),
     snip('oit', 'integral_Omega ', {}, math),

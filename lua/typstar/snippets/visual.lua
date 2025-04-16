@@ -18,6 +18,7 @@ local operations = { -- first boolean: existing brackets should be kept; second 
     { 'sq', '[', ']', true, false }, -- add square brackets
     { 'st', '{', '}', true, false }, -- add curly brackets
     { 'bB', '(', ')', false, false }, -- replace with round brackets
+    { 'ANG', 'angle.l ', ' angle.r', false, false }, -- add angle
     { 'sQ', '[', ']', false, false }, -- replace with square brackets
     { 'BB', '', '', false, false }, -- remove brackets
     { 'ss', '"', '"', false, false },
@@ -33,6 +34,9 @@ local operations = { -- first boolean: existing brackets should be kept; second 
     { 'td', 'tilde', '', true, true },
     { 'nr', 'norm', '', true, true },
     { 'vv', 'vec', '', true, true },
+    { 'rot', 'rot', '', true, true }, -- add rot
+    { 'div', 'div', '', true, true }, -- add div
+    { 'grad', 'grad', '', true, true }, -- add grad
     { 'rt', 'sqrt', '', true, true },
     { 'flo', 'floor', '', true, true },
     { 'cei', 'ceil', '', true, true },
