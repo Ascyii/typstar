@@ -7,10 +7,12 @@ local math = helper.in_math
 local cap = helper.cap
 
 return {
-    snip('fa', 'forall ', {}, math),
+    snip('foa', 'forall ', {}, math),
     snip('ex', 'exists ', {}, math),
     snip('ni', 'in.not ', {}, math),
     snip('Sq', 'square', {}, math),
+
+    snip('ta', 'star', {}, math), -- star because its not possible to type it
 
     -- logical chunks
     snip('fen', 'forall epsilon>>0 ', {}, math),
@@ -26,12 +28,16 @@ return {
 
     -- relations
     snip('el', '= ', {}, math),
+    snip('apr', 'approx ', {}, math), -- added approx
     snip('df', ':= ', {}, math),
     snip('lt', '<< ', {}, math),
     snip('gt', '>> ', {}, math),
     snip('le', '<<= ', {}, math),
     snip('ne', '!= ', {}, math),
     snip('ge', '>>= ', {}, math),
+    snip('nl', ' \\\n\t<>', {i(1, 'pi')}, math), -- added newline
+
+    snip('cc', 'cases(\n\t<>\n)\\', { i(1, '1') }, math),
 
     -- operators
     snip('ak([^k ])', '+ <>', { cap(1) }, math, 100, false),
@@ -39,6 +45,10 @@ return {
     snip('oak', 'plus.circle ', {}, math),
     snip('bak', 'plus.square ', {}, math),
     snip('mak', 'plus.minus ', {}, math),
+    snip('pp', '+ ', {}, math), -- added plus
+    snip('mm', '- ', {}, math), --added minux
+
+    snip('nab', 'arrow(nabla) ', {}, math), -- add nabla
     snip('xx', 'times ', {}, math, 900),
     snip('oxx', 'times.circle ', {}, math),
     snip('bxx', 'times.square ', {}, math),
@@ -77,6 +87,9 @@ return {
 
     snip('dx', 'dif / (dif <>) ', { i(1, 'x') }, math, 900),
     snip('ddx', '(dif <>) / (dif <>) ', { i(1, 'f'), i(2, 'x') }, math),
+    snip('px', 'partial / (partial <>) ', { i(1, 'x') }, math, 900), -- add partials
+    snip('ppx', '(partial <>) / (partial <>) ', { i(1, 'f'), i(2, 'x') }, math),
+
     snip('it', 'integral ', {}, math, 900),
     snip('int', 'integral_(<>)^(<>) ', { i(1, 'a'), i(2, 'b') }, math),
     snip('oit', 'integral_Omega ', {}, math),

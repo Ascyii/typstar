@@ -17,6 +17,7 @@ local ctheorems = {
     { 'def', 'definition' },
     { 'exa', 'example' },
     { 'rem', 'remark' },
+    { 'nte', 'note' }, -- add note
 }
 
 local wrappings = {
@@ -49,9 +50,19 @@ return {
         { helper.leading_white_spaces(1), visual(1), helper.leading_white_spaces(1) },
         markup
     ),
+
     start('fla', '#flashcard(0)[<>][\n<>\t<>\n<>]', { i(1, 'flashcard'), cap(1), visual(2), cap(1) }, markup),
     start('flA', '#flashcard(0, "<>")[\n<>\t<>\n<>]', { i(1, 'flashcard'), cap(1), visual(2), cap(1) }, markup),
     snip('IMP', '$==>>$ ', {}, markup),
     snip('IFF', '$<<==>>$ ', {}, markup),
+
+	-- Custom snippets
+	-- Short for the common arrows
+    snip('too', '$->>$ ', {}, markup),
+    snip('imp', '$==>>$ ', {}, markup),
+
+	-- TODO: make this also accept a tab for overwriting the visual
+    snip('nl', ' \\\n<>', {i(1, 'Weiter')}, markup), --newline for markup
+	
     unpack(document_snippets),
 }
