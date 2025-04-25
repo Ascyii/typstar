@@ -12,6 +12,8 @@ local snip = helper.snip
 
 local snippets = {}
 
+-- TODO: fix the bug that when using llEhtC-l the cursor jumps back to the front. Where it is excpected that it jumps behind the $.
+
 local operations = { -- first boolean: existing brackets should be kept; second boolean: brackets should be added
     { 'vi', '1/', '', true, false },
     { 'bb', '(', ')', true, false }, -- add round brackets
@@ -69,21 +71,76 @@ local process_ts_query = function(bufnr, cursor, query, root, insert1, insert2, 
 end
 
 local smart_wrap = function(args, parent, old_state, expand)
-    local bufnr = vim.api.nvim_get_current_buf()
+    local bufnr  = vim.api.nvim_get_current_buf()
     local cursor = utils.get_cursor_pos()
-    local root = utils.get_treesitter_root(bufnr)
+    local root   = utils.get_treesitter_root(bufnr)
 
-    if process_ts_query(bufnr, cursor, ts_wrapnobrackets_query, root, expand[2], expand[3], expand[4] and 0 or 1) then
-        return s(nil, t())
-    end
+    -- figure out the left/right wrapper pieces
+    local left  = expand[5] and (expand[2] .. '(') or expand[2]
+    local right = expand[5] and (expand[3] .. ')') or expand[3]
 
-    local expand1 = expand[5] and expand[2] .. '(' or expand[2]
-    local expand2 = expand[5] and expand[3] .. ')' or expand[3]
-    if process_ts_query(bufnr, cursor, ts_wrap_query, root, expand1, expand2) then return s(nil, t()) end
+    -- 1) if you actually selected text, just wrap that
     if #parent.env.LS_SELECT_RAW > 0 then
-        return s(nil, t(expand1 .. table.concat(parent.env.LS_SELECT_RAW) .. expand2))
+        return s(nil, {
+            t(left),
+            t(table.concat(parent.env.LS_SELECT_RAW)),
+            t(right),
+        })
     end
-    return s(nil, { t(expand1), i(1, '1+1'), t(expand2) })
+
+    -- helper to grab a TS match (text + its extents)
+    local function find_match(query)
+        for _, match, _ in query:iter_matches(root, bufnr, cursor[1], cursor[1] + 1) do
+            if match then
+                local sr, sc, er, ec = utils.treesitter_match_start_end(match)
+                if er == cursor[1] and ec == cursor[2] then
+                    local lines = vim.api.nvim_buf_get_text(bufnr, sr, sc, er, ec, {})
+                    return {
+                        text      = table.concat(lines, ''),
+                        start_row = sr,
+                        start_col = sc,
+                        end_row   = er,
+                        end_col   = ec,
+                    }
+                end
+            end
+        end
+    end
+
+    -- 2) try a no-brackets query, then the normal wrap query
+    local m = find_match(ts_wrapnobrackets_query) or find_match(ts_wrap_query)
+    if m then
+        -- only if the character just before the cursor is alphanumeric
+        local col = cursor[2]
+        if col > 0 then
+            local char = vim.api.nvim_buf_get_text(bufnr, cursor[1], col - 1, cursor[1], col, {})[1]
+            if char:match('%w') then
+                -- delete the old text...
+                vim.schedule(function()
+                    vim.api.nvim_buf_set_text(
+                        bufnr,
+                        m.start_row, m.start_col,
+                        m.end_row,   m.end_col,
+                        {}
+                    )
+                end)
+                -- ...and return the wrapped snippet
+                return s(nil, {
+                    t(left),
+                    t(m.text),
+                    i(1),
+                    t(right),
+                })
+            end
+        end
+    end
+
+    -- 3) fallback: no selection, no valid match → default placeholder
+    return s(nil, {
+        t(left),
+        i(1, '1+1'),
+        t(right),
+    })
 end
 
 for _, val in pairs(operations) do
