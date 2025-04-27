@@ -12,8 +12,6 @@ local snip = helper.snip
 
 local snippets = {}
 
--- TODO: fix the bug that when using llEhtC-l the cursor jumps back to the front. Where it is excpected that it jumps behind the $.
-
 local operations = { -- first boolean: existing brackets should be kept; second boolean: brackets should be added
     { 'vi', '1/', '', true, false },
     { 'bb', '(', ')', true, false }, -- add round brackets
@@ -150,3 +148,4 @@ end
 return {
     unpack(snippets),
 }
+
