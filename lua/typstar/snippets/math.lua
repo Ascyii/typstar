@@ -8,6 +8,8 @@ local cap = helper.cap
 
 return {
     snip('foa', 'forall ', {}, math),
+    snip('sfoa', 'space forall ', {}, math), -- space forall
+    snip('sex', 'space exists ', {}, math), -- space exists
     snip('ex', 'exists ', {}, math),
     snip('ni', 'in.not ', {}, math),
     snip('Sq', 'square', {}, math),
@@ -26,6 +28,8 @@ return {
     snip('ib', '<<== ', {}, math),
     snip('iff', '<<==>> ', {}, math),
 
+    snip(',,', '\\, ', {}, math),
+
     -- relations
     snip('el', '= ', {}, math),
     snip('apr', 'approx ', {}, math), -- added approx
@@ -35,8 +39,10 @@ return {
     snip('le', '<<= ', {}, math),
     snip('ne', '!= ', {}, math),
     snip('ge', '>>= ', {}, math),
-    snip('nl', ' \\\n\t<>', {i(1, 'pi')}, math), -- added newline
 
+    snip('nl', ' \\\n\t<>', {i(1, 'pi')}, math), -- added newline
+    snip('nx', ', space <>', {cap(1)}, math), -- added enumeration
+    snip('qd', 'quad <>', {cap(1)}, math), -- added quad
     snip('cc', 'cases(\n\t<>\n)\\', { i(1, '1') }, math),
 
     -- operators
@@ -45,7 +51,7 @@ return {
     snip('oak', 'plus.circle ', {}, math),
     snip('bak', 'plus.square ', {}, math),
     snip('mak', 'plus.minus ', {}, math),
-    snip('pp', '+ ', {}, math), -- added plus
+    snip('pl', '+ ', {}, math), -- added plus
     snip('mm', '- ', {}, math), --added minux
 
     snip('nab', 'arrow(nabla) ', {}, math), -- add nabla

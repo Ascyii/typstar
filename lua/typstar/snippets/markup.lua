@@ -59,11 +59,11 @@ return {
 
 	-- Custom snippets
 	-- Short for the common arrows
-    snip('too', '$->>$ ', {}, markup),
+    snip('tto', '$->>$ ', {}, markup),
     snip('imp', '$==>>$ ', {}, markup),
 
 	-- TODO: make this also accept a tab for overwriting the visual
-    snip('nl', ' \\\n<>', {i(1, 'Weiter')}, markup), --newline for markup
+    snip('nl', '\\\n<>', {visual(1)}, markup), --newline for markup
 	
     unpack(document_snippets),
 }
