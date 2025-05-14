@@ -68,6 +68,8 @@ return {
     snip('kk', '^(<>) ', { i(1, 'n') }, math, 500, false),
     snip('ep', 'exp(<>) ', { i(1, '1') }, math),
 
+    snip('delt', 'Delta t ', {}, math, 500, false),
+
     -- sets
     -- 'st' to '{<>} in ./visual.lua
     snip('set', '{<> | <>}', { i(1), i(2) }, math),
@@ -96,7 +98,12 @@ return {
     snip('px', 'partial / (partial <>) ', { i(1, 'x') }, math, 900), -- add partials
     snip('ppx', '(partial <>) / (partial <>) ', { i(1, 'f'), i(2, 'x') }, math),
 
+	-- integrals
     snip('it', 'integral ', {}, math, 900),
+    snip('ict', 'integral.cont ', {}, math, 900),
+    snip('iot', 'integral.vol ', {}, math, 900),
+    snip('isut', 'integral.surf ', {}, math, 900),
+	
     snip('int', 'integral_(<>)^(<>) ', { i(1, 'a'), i(2, 'b') }, math),
     snip('oit', 'integral_Omega ', {}, math),
     snip('dit', 'integral_(<>) ', { i(1, 'Omega') }, math),

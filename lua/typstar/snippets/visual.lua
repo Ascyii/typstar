@@ -27,6 +27,7 @@ local operations = { -- first boolean: existing brackets should be kept; second 
     { 'ol', 'overline', '', true, true },
     { 'ub', 'underbrace', '', true, true },
     { 'ob', 'overbrace', '', true, true },
+    { 'bo', 'bold', '', true, true },
     { 'ht', 'hat', '', true, true },
     { 'ar', 'arrow', '', true, true }, -- added vector arrow
     { 'br', 'macron', '', true, true },
