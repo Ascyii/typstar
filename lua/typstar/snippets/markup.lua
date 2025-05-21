@@ -19,10 +19,11 @@ local ctheorems = {
     { 'exa', 'example' },
     { 'rem', 'remark' },
     { 'nte', 'note' }, -- add note
+    -- { 'eex', 'experiment' }, -- add experiment
 }
 
 local wrappings = {
-    { 'll', '$', '$', '1+1' },
+    { 'll', '$', '$', '' },
     { 'BLD', '*', '*', 'abc' },
     { 'ITL', '_', '_', 'abc' },
     { 'HIG', '#highlight[', ']', 'abc' },
@@ -60,7 +61,6 @@ return {
 	-- Custom snippets
 	-- Short for the common arrows
     snip('tto', '$->>$ ', {}, markup),
-    snip('imp', '$==>>$ ', {}, markup),
 
 	-- TODO: make this also accept a tab for overwriting the visual
     snip('nl', '\\\n<>', {visual(1)}, markup), --newline for markup

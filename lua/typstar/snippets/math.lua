@@ -24,23 +24,27 @@ return {
 
     -- boolean logic
     snip('no', 'not ', {}, math),
-    snip('ip', '==>> ', {}, math),
-    snip('ib', '<<== ', {}, math),
-    snip('iff', '<<==>> ', {}, math),
+    snip('ip', '=>> ', {}, math),
+    snip('ipp', '&=>> ', {}, math),
+    snip('ib', '<<= ', {}, math),
+    snip('iff', '<<=>> ', {}, math),
+    snip('iiff', '&<<=>> ', {}, math),
 
     snip(',,', '\\, ', {}, math),
 
     -- relations
     snip('el', '= ', {}, math),
+    snip('eel', '&= ', {}, math),
     snip('apr', 'approx ', {}, math), -- added approx
     snip('df', ':= ', {}, math),
+    snip('ddf', ':<<=>> ', {}, math),
     snip('lt', '<< ', {}, math),
     snip('gt', '>> ', {}, math),
     snip('le', '<<= ', {}, math),
     snip('ne', '!= ', {}, math),
     snip('ge', '>>= ', {}, math),
 
-    snip('nl', ' \\\n\t<>', {i(1, 'pi')}, math), -- added newline
+    snip('nl', ' \\\n\t<>', {i(1)}, math), -- added newline
     snip('nx', ', space <>', {cap(1)}, math), -- added enumeration
     snip('qd', 'quad <>', {cap(1)}, math), -- added quad
     snip('cc', 'cases(\n\t<>\n)\\', { i(1, '1') }, math),
@@ -49,8 +53,8 @@ return {
     snip('ak([^k ])', '+ <>', { cap(1) }, math, 100, false),
     snip('sk([^k ])', '- <>', { cap(1) }, math, 100, false),
     snip('oak', 'plus.circle ', {}, math),
-    snip('bak', 'plus.square ', {}, math),
     snip('mak', 'plus.minus ', {}, math),
+
     snip('pl', '+ ', {}, math), -- added plus
     snip('mm', '- ', {}, math), --added minux
 
@@ -58,30 +62,31 @@ return {
     snip('xx', 'times ', {}, math, 900),
     snip('oxx', 'times.circle ', {}, math),
     snip('bxx', 'times.square ', {}, math),
-    snip('ff', '(<>) / (<>) <>', { i(1, 'a'), i(2, 'b'), i(3) }, math),
+    snip('ff', '(<>) / (<>) <>', { i(1), i(2), i(3) }, math),
 
     -- exponents
     snip('iv', '^(-1) ', {}, math, 500, false),
     snip('sr', '^2 ', {}, math, 500, false),
     snip('cb', '^3 ', {}, math, 500, false),
-    snip('jj', '_(<>) ', { i(1, 'n') }, math, 500, false),
-    snip('kk', '^(<>) ', { i(1, 'n') }, math, 500, false),
+    snip('jj', '_(<>) ', { i(1) }, math, 500, false),
+    snip('kk', '^(<>) ', { i(1) }, math, 500, false),
     snip('ep', 'exp(<>) ', { i(1, '1') }, math),
 
     snip('delt', 'Delta t ', {}, math, 500, false),
+    snip('sp', 'space ', {}, math, 500, false),
 
     -- sets
     -- 'st' to '{<>} in ./visual.lua
     snip('set', '{<> | <>}', { i(1), i(2) }, math),
     snip('es', 'emptyset ', {}, math, 900),
     snip('ses', '{emptyset} ', {}, math),
-    snip('sp', 'supset ', {}, math),
+    snip('sus', 'supset ', {}, math),
     snip('sb', 'subset ', {}, math),
     snip('sep', 'supset.eq ', {}, math),
     snip('seb', 'subset.eq ', {}, math),
-    snip('nn', 'inter ', {}, math, 900),
+    snip('nn', 'sect ', {}, math, 900),
     snip('uu', 'union ', {}, math, 900),
-    snip('bnn', 'inter.big ', {}, math),
+    snip('bnn', 'sect.big ', {}, math),
     snip('buu', 'union.big ', {}, math),
     snip('swo', 'without ', {}, math),
 
@@ -93,10 +98,12 @@ return {
     snip('cc', 'cases(\n\t<>\n)\\', { i(1, '1') }, math),
     snip('(K|M|N|Q|R|S|Z)([\\dn]) ', '<><>^<> ', { cap(1), cap(1), cap(2) }, math),
 
-    snip('dx', 'dif / (dif <>) ', { i(1, 'x') }, math, 900),
-    snip('ddx', '(dif <>) / (dif <>) ', { i(1, 'f'), i(2, 'x') }, math),
-    snip('px', 'partial / (partial <>) ', { i(1, 'x') }, math, 900), -- add partials
-    snip('ppx', '(partial <>) / (partial <>) ', { i(1, 'f'), i(2, 'x') }, math),
+    snip('dx', 'dif / (dif <>) ', { i(1, '') }, math, 900),
+    snip('ddx', '(dif <>) / (dif <>) ', { i(1, ''), i(2, 'x') }, math),
+    snip('px', 'partial / (partial <>) ', { i(1, '') }, math, 900), -- add partials
+    snip('ppx', '(partial <>) / (partial <>) ', { i(1), i(2) }, math),
+
+    snip('ppa', 'partial_(<>) ', { i(1, 'x') }, math, 900), -- add partials
 
 	-- integrals
     snip('it', 'integral ', {}, math, 900),
@@ -109,7 +116,7 @@ return {
     snip('dit', 'integral_(<>) ', { i(1, 'Omega') }, math),
 
     snip('sm', 'sum ', {}, math, 900),
-    snip('sum', 'sum_(<>)^(<>) ', { i(1, 'i=0'), i(2, 'oo') }, math),
+    snip('sum', 'sum_(<>)^(<>) ', { i(1, 'i=1'), i(2, 'n') }, math),
     snip('osm', 'sum_Omega ', {}, math),
     snip('dsm', 'sum_(<>) ', { i(1, 'I') }, math),
 

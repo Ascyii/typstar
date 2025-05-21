@@ -40,10 +40,13 @@ local operations = { -- first boolean: existing brackets should be kept; second 
     { 'rot', 'rot', '', true, true }, -- add rot
     { 'div', 'div', '', true, true }, -- add div
     { 'grad', 'grad', '', true, true }, -- add grad
+    { 'sgn', 'sign', '', true, true }, -- add sign
     { 'rt', 'sqrt', '', true, true },
     { 'flo', 'floor', '', true, true },
     { 'cei', 'ceil', '', true, true },
 }
+
+-- TODO: understand this logic and make it more efficient
 
 local ts_wrap_query = ts.query.parse('typst', '[(call) (ident) (letter) (number)] @wrap')
 local ts_wrapnobrackets_query = ts.query.parse('typst', '(group) @wrapnobrackets')
@@ -137,7 +140,7 @@ local smart_wrap = function(args, parent, old_state, expand)
     -- 3) fallback: no selection, no valid match → default placeholder
     return s(nil, {
         t(left),
-        i(1, '1+1'),
+        i(1),
         t(right),
     })
 end
