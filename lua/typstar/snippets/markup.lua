@@ -19,10 +19,12 @@ local ctheorems = {
     { 'def', 'definition' },
     { 'exa', 'example' },
     { 'rem', 'remark' },
+    { 'nte', 'note' }, -- add note
+    -- { 'eex', 'experiment' }, -- add experiment
 }
 
 local wrappings = {
-    { 'll', '$', '$', '1+1' },
+    { 'll', '$', '$', '' },
     { 'BLD', '*', '*', 'abc' },
     { 'ITL', '_', '_', 'abc' },
     { 'HIG', '#highlight[', ']', 'abc' },
@@ -51,5 +53,13 @@ return {
     start('flA', '#flashcard(0, "<>")[\n<>\n<>]', { i(1, 'flashcard'), indent_visual(2), cap(1) }, markup),
     snip('IMP', '$==>>$ ', {}, markup),
     snip('IFF', '$<<==>>$ ', {}, markup),
+
+	-- Custom snippets
+	-- Short for the common arrows
+    snip('tto', '$->>$ ', {}, markup),
+
+	-- TODO: make this also accept a tab for overwriting the visual
+    snip('nl', '\\\n<>', {visual(1)}, markup), --newline for markup
+	
     unpack(document_snippets),
 }
