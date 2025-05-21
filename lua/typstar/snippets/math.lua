@@ -50,8 +50,8 @@ return {
     snip('cc', 'cases(\n\t<>\n)\\', { i(1, '1') }, math),
 
     -- operators
-    snip('ak([^k ])', '+ <>', { cap(1) }, math, 100, false),
-    snip('sk([^k ])', '- <>', { cap(1) }, math, 100, false),
+    snip('ak([^k ])', '+ <>', { cap(1) }, math, 100, { wordTrig = false }),
+    snip('sk([^k ])', '- <>', { cap(1) }, math, 100, { wordTrig = false }),
     snip('oak', 'plus.circle ', {}, math),
     snip('mak', 'plus.minus ', {}, math),
 
@@ -65,11 +65,11 @@ return {
     snip('ff', '(<>) / (<>) <>', { i(1), i(2), i(3) }, math),
 
     -- exponents
-    snip('iv', '^(-1) ', {}, math, 500, false),
-    snip('sr', '^2 ', {}, math, 500, false),
-    snip('cb', '^3 ', {}, math, 500, false),
-    snip('jj', '_(<>) ', { i(1) }, math, 500, false),
-    snip('kk', '^(<>) ', { i(1) }, math, 500, false),
+    snip('iv', '^(-1) ', {}, math, 500, { wordTrig = false, blacklist = { 'equiv' } }),
+    snip('sr', '^2 ', {}, math, 500, { wordTrig = false }),
+    snip('cb', '^3 ', {}, math, 500, { wordTrig = false }),
+    snip('jj', '_(<>) ', { i(1, 'n') }, math, 500, { wordTrig = false }),
+    snip('kk', '^(<>) ', { i(1, 'n') }, math, 500, { wordTrig = false }),
     snip('ep', 'exp(<>) ', { i(1, '1') }, math),
 
     snip('delt', 'Delta t ', {}, math, 500, false),
@@ -96,6 +96,10 @@ return {
     snip('Oo', 'compose ', {}, math),
     snip('iso', 'tilde.equiv ', {}, math),
     snip('cc', 'cases(\n\t<>\n)\\', { i(1, '1') }, math),
+    snip('([A-Za-z])o([A-Za-z0-9])', '<>(<>) ', { cap(1), cap(2) }, math, 100, {
+        maxTrigLength = 3,
+        blacklist = { 'bot', 'cos', 'col', 'com', 'con', 'dol', 'dot', 'log', 'loz', 'mod', 'top', 'won', 'xor' },
+    }),
     snip('(K|M|N|Q|R|S|Z)([\\dn]) ', '<><>^<> ', { cap(1), cap(1), cap(2) }, math),
 
     snip('dx', 'dif / (dif <>) ', { i(1, '') }, math, 900),
@@ -123,5 +127,12 @@ return {
     snip('lm', 'lim ', {}, math),
     snip('lim', 'lim_(<> ->> <>) ', { i(1, 'n'), i(2, 'oo') }, math),
     snip('lim (sup|inf)', 'lim<> ', { cap(1) }, math),
-    snip('lim(_\\(\\s?\\w+\\s?->\\s?\\w+\\s?\\)) (sup|inf)', 'lim<><> ', { cap(2), cap(1) }, math, 1000, true, 25),
+    snip(
+        'lim(_\\(\\s?\\w+\\s?->\\s?\\w+\\s?\\)) (sup|inf)',
+        'lim<><> ',
+        { cap(2), cap(1) },
+        math,
+        1000,
+        { maxTrigLength = 25 }
+    ),
 }
