@@ -1,16 +1,26 @@
 # Typstar
-Neovim plugin for efficient note taking in Typst
+Neovim plugin for efficient (mathematical) note taking in Typst
 
 ## Features
 - Powerful autosnippets using [LuaSnip](https://github.com/L3MON4D3/LuaSnip/) and [Tree-sitter](https://tree-sitter.github.io/) (inspired by [fastex.nvim](https://github.com/lentilus/fastex.nvim))
-- Easy insertion of drawings using [Obsidian Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin)
+- Easy insertion of drawings using [Obsidian Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) or [Rnote](https://github.com/flxzt/rnote)
 - Export of [Anki](https://apps.ankiweb.net/) flashcards \[No Neovim required\]
 
 ## Usage
 
 ### Snippets
 Use `:TypstarToggleSnippets` to toggle all snippets at any time.
+To efficiently navigate insert nodes and avoid overlapping ones,
+use `:TypstarSmartJump` and `:TypstarSmartJumpBack`.
 Available snippets can mostly be intuitively derived from [here](././lua/typstar/snippets), they include:
+
+Universal snippets:
+- Alphanumeric characters: `:<char>` &#8594; `$<char>$ ` in markup (e.g. `:X` &#8594; `$X$ `, `:5` &#8594; `$5$ `)
+- Greek letters: `;<latin>` &#8594; `<greek>` in math and `$<greek>$ ` in markup (e.g. `;a` &#8594; `alpha`/`$alpha$ `)
+- Common indices (numbers and letters `i-n`): `<letter><index> ` &#8594; `<letter>_<index> ` in math and `$<letter>$<index> ` &#8594; `$<letter>_<index>$ ` in markup (e.g `A314 ` &#8594; `A_314 `, `$alpha$n ` &#8594; `$alpha_n$ `)
+
+You can find a complete map of latin to greek letters including reasons for the less intuitive ones [here](./lua/typstar/snippets/letters.lua).
+Note that some greek letters have multiple latin ones mapped to them.
 
 Markup snippets:
 - Begin inline math with `ll` and multiline math with `dm`
@@ -21,18 +31,20 @@ Markup snippets:
 
 Math snippets:
 - [Many shorthands](./lua/typstar/snippets/math.lua) for mathematical expressions
-- Alphanumeric characters: `:<char>` &#8594; `$<char>$ ` in markup (e.g. `:X` &#8594; `$X$ `, `:5` &#8594; `$5$ `)
-- Greek letters: `;<latin>` &#8594; `<greek>` in math and `$<greek>$ ` in markup (e.g. `;a` &#8594; `alpha`/`$alpha$ `)
-- Common indices (numbers and letters `i-n`): `<letter><index> ` &#8594; `<letter>_<index> ` in math and `$<letter>$<index> ` &#8594; `$<letter>_<index>$ ` in markup (e.g `A314 ` &#8594; `A_314 `, `$alpha$n ` &#8594; `$alpha_n$ `)
 - Series of numbered letters: `<letter> ot<optional last index> ` &#8594; `<letter>_1, <letter>_2, ... ` (e.g. `a ot ` &#8594; `a_1, a_2, ... `, `a ot4 ` &#8594; `a_1, a_2, a_3, a_4 `, `alpha otk ` &#8594; `alpha_1, alpha_2, ..., alpha_k `)
 - Wrapping of any mathematical expression (see [operations](./lua/typstar/snippets/visual.lua), works nested, multiline and in visual mode via the [selection key](#installation)): `<expression><operation>` &#8594; `<operation>(<expression>)` (e.g. `(a^2+b^2)rt` &#8594; `sqrt(a^2+b^2)`, `lambdatd` &#8594; `tilde(lambda)`, `(1+1)sQ` &#8594; `[1+1]`, `(1+1)sq` &#8594; `[(1+1)]`)
+- Simple functions: `fo<value> ` &#8594; `f(<value>) ` (e.g. `fox ` &#8594; `f(x) `, `ao5 ` &#8594; `a(5) `)
 - Matrices: `<size>ma` and `<size>lma` (e.g. `23ma` &#8594; 2x3 matrix)
 
 Note that you can [customize](#custom-snippets) (enable, disable and modify) every snippet.
 
-### Excalidraw
-- Use `:TypstarInsertExcalidraw` to create a new drawing using the configured template, insert a figure displaying it and open it in Obsidian.
-- To open an inserted drawing in Obsidian, simply run `:TypstarOpenExcalidraw` while your cursor is on a line referencing the drawing.
+### Excalidraw/Rnote
+- Use `:TypstarInsertExcalidraw`/`:TypstarInsertRnote` to
+  create a new drawing using the [configured](#configuration) template,
+  insert a figure displaying it and open it in Obsidian/Rnote.
+- To open an inserted drawing in Obsidian/Rnote,
+  simply run `:TypstarOpenDrawing` (or `:TypstarOpenExcalidraw`/`:TypstarOpenRnote` if you are using the same file extension for both)
+  while your cursor is on a line referencing the drawing.
 
 ### Anki
 Use the `flA` snippet to create a new flashcard
@@ -82,17 +94,85 @@ require('typstar').setup({ -- depending on your neovim plugin system
 })
 ```
 
+<details>
+<summary>Example lazy.nvim config</summary>
+
+```lua
+{
+    "arne314/typstar",
+    dependencies = {
+        "L3MON4D3/LuaSnip",
+    },
+    ft = { "typst" },
+    keys = {
+        {
+            "<M-t>",
+            "<Cmd>TypstarToggleSnippets<CR>",
+            mode = { "n", "i" },
+        },
+        {
+            "<M-j>",
+            "<Cmd>TypstarSmartJump<CR>",
+            mode = { "s", "i" },
+        },
+        {
+            "<M-k>",
+            "<Cmd>TypstarSmartJumpBack<CR>",
+            mode = { "s", "i" },
+        },
+    },
+    config = function()
+        local typstar = require("typstar")
+        typstar.setup({
+            -- your typstar configuration
+            add_undo_breakpoints = true,
+        })
+    end,
+},
+{
+    "L3MON4D3/LuaSnip",
+    version = "v2.*",
+    build = "make install_jsregexp",
+    config = function()
+        local luasnip = require("luasnip")
+        luasnip.config.setup({
+            enable_autosnippets = true,
+            store_selection_keys = "<Tab>",
+        })
+    end,
+},
+{
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    lazy = false,
+    config = function()
+        local configs = require("nvim-treesitter.configs")
+        configs.setup({
+            ensure_installed = { "typst" },
+        })
+    end,
+},
+```
+</details>
+
 ### Snippets
 1. Install [LuaSnip](https://github.com/L3MON4D3/LuaSnip/), set `enable_autosnippets = true` and set a visual mode selection key (e.g. `store_selection_keys = '<Tab>'`) in the configuration
 2. Install [jsregexp](https://github.com/kmarius/jsregexp) as described [here](https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#transformations) (You will see a warning on startup if jsregexp isn't installed properly)
 3. Install [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) and run `:TSInstall typst`
-4. Optional: Setup [ctheorems](https://typst.app/universe/package/ctheorems/) with names like [here](./lua/typstar/snippets/markup.lua)
+4. Make sure you haven't remapped `<C-g>`. Otherwise set `add_undo_breakpoints = false` in the [config](#configuration)
+5. Optional: Setup [ctheorems](https://typst.app/universe/package/ctheorems/) with names like [here](./lua/typstar/snippets/markup.lua)
 
 ### Excalidraw
 1. Install [Obsidian](https://obsidian.md/) and create a vault in your typst note taking directory
 2. Install the [obsidian-excalidraw-plugin](https://github.com/zsviczian/obsidian-excalidraw-plugin) and enable `Auto-export SVG` (in plugin settings at `Embedding Excalidraw into your Notes and Exporting > Export Settings > Auto-export Settings`)
 3. Have the `xdg-open` command working or set a different command at `uriOpenCommand` in the [config](#configuration)
-4. If you encounter issues try cloning the repo into `~/typstar` or setting the `typstarRoot` config accordingly, feel free to open an issue
+4. If you encounter issues with the file creation of drawings, try cloning the repo into `~/typstar` or setting the `typstarRoot` config accordingly; feel free to open an issue
+
+### Rnote
+1. Install [Rnote](https://github.com/flxzt/rnote?tab=readme-ov-file#installation); I recommend not using flatpak as that might cause issues with file permissions.
+2. Make sure `rnote-cli` is available in your `PATH` or set a different command at `exportCommand` in the [config](#configuration)
+3. Have the `xdg-open` command working with Rnote files or set a different command at `uriOpenCommand` in the [config](#configuration)
+4. See comment 4 above at Excalidraw
 
 ### Anki
 0. Typst version `0.12.0` or higher is required
@@ -131,11 +211,25 @@ with pkgs; [
 ## Configuration
 Configuration options can be intuitively derived from the table [here](./lua/typstar/config.lua).
 
+### Excalidraw/Rnote templates
+The `templatePath` option expects a table that maps file patterns to template locations.
+To for example have a specific template for lectures, you could configure it like this
+```Lua
+templatePath = {
+    { 'lectures/.*%.excalidraw%.md$', '~/Templates/lecture_excalidraw.excalidraw.md' }, -- path contains "lectures"
+    { '%.excalidraw%.md$', '~/Templates/default_excalidraw.excalidraw.md' }, -- fallback
+},
+```
+
 ### Custom snippets
 The [config](#configuration) allows you to
 - disable all snippets via `snippets.enable = false`
 - only include specific modules from the snippets folder via e.g. `snippets.modules = { 'letters' }`
 - exclude specific triggers via e.g. `snippets.exclude = { 'dx', 'ddx' }`
+- disable different behaviors of snippets from the `visual` module
+    - visual selection via e.g. `snippets.visual_disable = { 'br' }`
+    - normal snippets (`abs` &#8594; `abs(1+1)`) via e.g. `snippets.visual_disable_normal = { 'abs' }`
+    - postfix snippets (`xabs` &#8594; `abs(x)`) via e.g. `snippets.visual_disable_postfix = { 'abs' }`
 
 For further customization you can make use of the provided wrappers from within your [LuaSnip](https://github.com/L3MON4D3/LuaSnip/) config.
 Let's say you prefer the short `=>` arrow over the long `==>` one and would like to change the `ip` trigger to `imp`.

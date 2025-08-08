@@ -26,8 +26,9 @@ function M.insert_text_block(snip)
     vim.api.nvim_buf_set_lines(vim.api.nvim_get_current_buf(), line_num, line_num, false, lines)
 end
 
-function M.run_shell_command(cmd, show_output, extra_handler)
+function M.run_shell_command(cmd, show_output, extra_handler, opts)
     extra_handler = extra_handler or function(msg) end
+    opts = opts or { on_exit = function() end }
     local handle_output = function(data, err)
         local msg = table.concat(data, '\n')
         if not string.match(msg, '^%s*$') then
@@ -37,14 +38,17 @@ function M.run_shell_command(cmd, show_output, extra_handler)
         end
     end
     if show_output then
-        vim.fn.jobstart(cmd, {
-            on_stdout = function(_, data, _) handle_output(data, false) end,
-            on_stderr = function(_, data, _) handle_output(data, true) end,
-            stdout_buffered = false,
-            stderr_buffered = true,
-        })
+        return vim.fn.jobstart(
+            cmd,
+            vim.tbl_deep_extend('force', {
+                on_stdout = function(_, data, _) handle_output(data, false) end,
+                on_stderr = function(_, data, _) handle_output(data, true) end,
+                stdout_buffered = false,
+                stderr_buffered = true,
+            }, opts)
+        )
     else
-        vim.fn.jobstart(cmd)
+        return vim.fn.jobstart(cmd, opts)
     end
 end
 
@@ -92,25 +96,35 @@ function M.treesitter_match_start_end(match)
     return start_row, start_col, end_row, end_col
 end
 
-function M.cursor_within_treesitter_query(query, match_tolerance, cursor)
+function M.cursor_within_treesitter_query(query, match_tolerance_l, match_tolerance_r, cursor)
     cursor = cursor or M.get_cursor_pos()
+    match_tolerance_l = match_tolerance_l or 0
+    match_tolerance_r = match_tolerance_r or 0
     local bufnr = vim.api.nvim_get_current_buf()
     local root = M.get_treesitter_root(bufnr)
     for _, match in ipairs(M.treesitter_iter_matches(root, query, bufnr, cursor[1], cursor[1] + 1)) do
         for _, nodes in pairs(match) do
             local start_row, start_col, end_row, end_col = M.treesitter_match_start_end(nodes)
-            local matched = M.cursor_within_coords(cursor, start_row, end_row, start_col, end_col, match_tolerance)
+            local matched = M.cursor_within_coords(
+                cursor,
+                start_row,
+                end_row,
+                start_col,
+                end_col,
+                match_tolerance_l,
+                match_tolerance_r
+            )
             if matched then return true end
         end
     end
     return false
 end
 
-function M.cursor_within_coords(cursor, start_row, end_row, start_col, end_col, match_tolerance)
+function M.cursor_within_coords(cursor, start_row, end_row, start_col, end_col, match_tolerance_l, match_tolerance_r)
     if start_row <= cursor[1] and end_row >= cursor[1] then
-        if start_row == cursor[1] and start_col - match_tolerance >= cursor[2] then
+        if start_row == cursor[1] and start_col - match_tolerance_l >= cursor[2] then
             return false
-        elseif end_row == cursor[1] and end_col + match_tolerance <= cursor[2] then
+        elseif end_row == cursor[1] and end_col + match_tolerance_r <= cursor[2] then
             return false
         end
         return true

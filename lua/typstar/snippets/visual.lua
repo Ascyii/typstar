@@ -7,10 +7,17 @@ local t = ls.text_node
 
 local helper = require('typstar.autosnippets')
 local utils = require('typstar.utils')
+local cfg = require('typstar.config').config.snippets
 local math = helper.in_math
 local snip = helper.snip
 
 local snippets = {}
+local visual_disable = {}
+local visual_disable_normal = {}
+local visual_disable_postfix = {}
+utils.generate_bool_set(cfg.visual_disable, visual_disable)
+utils.generate_bool_set(cfg.visual_disable_normal, visual_disable_normal)
+utils.generate_bool_set(cfg.visual_disable_postfix, visual_disable_postfix)
 
 local operations = { -- first boolean: existing brackets should be kept; second boolean: brackets should be added
     { 'vi', '1/', '', true, false },
@@ -78,72 +85,31 @@ local smart_wrap = function(args, parent, old_state, expand)
     local cursor = utils.get_cursor_pos()
     local root   = utils.get_treesitter_root(bufnr)
 
-    -- figure out the left/right wrapper pieces
-    local left  = expand[5] and (expand[2] .. '(') or expand[2]
-    local right = expand[5] and (expand[3] .. ')') or expand[3]
+    local trigger = expand[1]
+    local expand1 = expand[5] and expand[2] .. '(' or expand[2]
+    local expand2 = expand[5] and expand[3] .. ')' or expand[3]
 
-    -- 1) if you actually selected text, just wrap that
-    if #parent.env.LS_SELECT_RAW > 0 then
-        return s(nil, {
-            t(left),
-            t(table.concat(parent.env.LS_SELECT_RAW)),
-            t(right),
-        })
+    -- visual selection
+    if not visual_disable[trigger] and #parent.env.LS_SELECT_RAW > 0 then
+        return s(nil, t(expand1 .. table.concat(parent.env.LS_SELECT_RAW) .. expand2))
     end
 
-    -- helper to grab a TS match (text + its extents)
-    local function find_match(query)
-        for _, match, _ in query:iter_matches(root, bufnr, cursor[1], cursor[1] + 1) do
-            if match then
-                local sr, sc, er, ec = utils.treesitter_match_start_end(match)
-                if er == cursor[1] and ec == cursor[2] then
-                    local lines = vim.api.nvim_buf_get_text(bufnr, sr, sc, er, ec, {})
-                    return {
-                        text      = table.concat(lines, ''),
-                        start_row = sr,
-                        start_col = sc,
-                        end_row   = er,
-                        end_col   = ec,
-                    }
-                end
-            end
+    -- postfix
+    if not visual_disable_postfix[trigger] then
+        if
+            process_ts_query(bufnr, cursor, ts_wrapnobrackets_query, root, expand[2], expand[3], expand[4] and 0 or 1)
+            or process_ts_query(bufnr, cursor, ts_wrap_query, root, expand1, expand2)
+        then
+            return s(nil, t())
         end
     end
 
-    -- 2) try a no-brackets query, then the normal wrap query
-    local m = find_match(ts_wrapnobrackets_query) or find_match(ts_wrap_query)
-    if m then
-        -- only if the character just before the cursor is alphanumeric
-        local col = cursor[2]
-        if col > 0 then
-            local char = vim.api.nvim_buf_get_text(bufnr, cursor[1], col - 1, cursor[1], col, {})[1]
-            if char:match('%w') then
-                -- delete the old text...
-                vim.schedule(function()
-                    vim.api.nvim_buf_set_text(
-                        bufnr,
-                        m.start_row, m.start_col,
-                        m.end_row,   m.end_col,
-                        {}
-                    )
-                end)
-                -- ...and return the wrapped snippet
-                return s(nil, {
-                    t(left),
-                    t(m.text),
-                    i(1),
-                    t(right),
-                })
-            end
-        end
+    -- normal snippet
+    if not visual_disable_normal[trigger] then
+        return s(nil, { t(expand1), i(1, '1+1'), t(expand2) })
+    else
+        return s(nil, t(trigger))
     end
-
-    -- 3) fallback: no selection, no valid match → default placeholder
-    return s(nil, {
-        t(left),
-        i(1),
-        t(right),
-    })
 end
 
 for _, val in pairs(operations) do

@@ -16,32 +16,33 @@ local greek_letters_map = {
     ['c'] = 'chi',
     ['d'] = 'delta',
     ['e'] = 'epsilon',
-    ['f'] = 'phi',
+    ['f'] = 'phi', -- sound
     ['g'] = 'gamma',
-    ['h'] = 'eta',
+    ['h'] = 'eta', -- look
     ['i'] = 'iota',
-    ['j'] = 'theta',
     ['k'] = 'kappa',
     ['l'] = 'lambda',
     ['m'] = 'mu',
     ['n'] = 'nu',
-    ['o'] = 'omega',
+    ['o'] = 'omikron',
     ['p'] = 'psi',
-    ['q'] = 'eta',
+    ['q'] = 'theta', -- look?
     ['r'] = 'rho',
     ['s'] = 'sigma',
     ['t'] = 'tau',
-    ['v'] = 'nu',
-    ['w'] = 'omega',
+    ['u'] = 'upsilon',
+    ['v'] = 'nu', -- look
+    ['w'] = 'omega', -- look
     ['x'] = 'xi',
-    ['y'] = 'upsilon',
+    ['y'] = 'upsilon', -- look
     ['z'] = 'zeta',
 }
+
 local greek_keys = {}
 local greek_letters_set = {}
 local common_indices = { '\\d+', '[i-n]' }
--- buitins and caligraphic letters from github.com/lentilus/readable-typst
-local index_conflicts = { 'Im', 'in', 'ln', 'pi', 'xi', 'Ii', 'Jj', 'Kk', 'Ll', 'Mm', 'Nn' }
+-- builtins and calligraphic letters from github.com/lentilus/typst-scribe
+local index_conflicts = { 'Im', 'in', 'ln', 'Pi', 'pi', 'Xi', 'xi', 'Ii', 'Jj', 'Kk', 'Ll', 'Mm', 'Nn' }
 local index_conflicts_set = {}
 local punctuation_prepend_space = { ',', ';' }
 local punctuation_prepend_space_set = {}

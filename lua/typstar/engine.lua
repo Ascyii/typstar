@@ -15,15 +15,15 @@ local ts_string_query = ts.query.parse('typst', '(string) @string')
 
 utils.generate_bool_set(cfg.exclude, exclude_triggers_set)
 vim.api.nvim_create_autocmd('TextChangedI', {
-    callback = function() last_keystroke_time = vim.loop.now() end,
+    callback = function() last_keystroke_time = vim.uv.now() end,
 })
 
 M.in_math = function()
     local cursor = utils.get_cursor_pos()
-    return utils.cursor_within_treesitter_query(ts_math_query, 0, cursor)
-        and not utils.cursor_within_treesitter_query(ts_string_query, 0, cursor)
+    return utils.cursor_within_treesitter_query(ts_math_query, 0, 0, cursor)
+        and not utils.cursor_within_treesitter_query(ts_string_query, 0, 0, cursor)
 end
-M.in_markup = function() return utils.cursor_within_treesitter_query(ts_markup_query, 2) end
+M.in_markup = function() return utils.cursor_within_treesitter_query(ts_markup_query, 1, 2) end
 M.not_in_math = function() return not M.in_math() end
 M.not_in_markup = function() return not M.in_markup() end
 M.snippets_toggle = true
@@ -167,6 +167,15 @@ function M.setup()
             end
         end
         luasnip.add_snippets('typst', autosnippets)
+
+        if cfg.add_undo_breakpoints then
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'LuasnipPreExpand',
+                callback = function()
+                    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-g>u', true, false, true), 'i', false)
+                end,
+            })
+        end
     end
 end
 
