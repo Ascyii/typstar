@@ -58,7 +58,7 @@ return {
     snip('tto', '$->>$ ', {}, markup),
 
 	-- TODO: make this also accept a tab for overwriting the visual
-    snip('nl', '\\\n<>', {visual(1)}, markup), --newline for markup
+    snip('nl', '\\\n<>', {indent_visual(1)}, markup), --newline for markup
 	
     unpack(document_snippets),
 }
