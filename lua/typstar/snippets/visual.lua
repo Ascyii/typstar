@@ -80,6 +80,7 @@ local process_ts_query = function(bufnr, cursor, query, root, insert1, insert2, 
     return false
 end
 
+-- own function cooked with GPT
 local smart_wrap = function(args, parent, old_state, expand)
     local bufnr  = vim.api.nvim_get_current_buf()
     local cursor = utils.get_cursor_pos()
