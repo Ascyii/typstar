@@ -13,8 +13,10 @@ return {
     snip('ex', 'exists ', {}, math),
     snip('ni', 'in.not ', {}, math),
     snip('Sq', 'square', {}, math),
+    -- snip('di', 'dif ', {}, math),
 
     snip('ta', 'star', {}, math), -- star because its not possible to type it
+    snip('tn', 'tan ', {}, math), -- star because its not possible to type it
 
     -- logical chunks
     snip('fen', 'forall epsilon>>0 ', {}, math),
@@ -31,6 +33,7 @@ return {
     snip('iiff', '&<<=>> ', {}, math),
 
     snip(',,', '\\, ', {}, math),
+    snip('sla', 'slash ', {}, math),
 
     -- relations
     snip('el', '= ', {}, math),

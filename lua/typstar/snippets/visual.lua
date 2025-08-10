@@ -52,6 +52,8 @@ local operations = { -- first boolean: existing brackets should be kept; second 
     { 'rt', 'sqrt', '', true, true },
     { 'flo', 'floor', '', true, true },
     { 'cei', 'ceil', '', true, true },
+    { 'Re', 'Re', '', true, true }, -- added imaginary
+    { 'Im', 'Im', '', true, true },
 }
 
 -- TODO: understand this logic and make it more efficient
