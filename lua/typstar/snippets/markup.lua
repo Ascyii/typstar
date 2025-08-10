@@ -20,7 +20,7 @@ local ctheorems = {
     { 'exa', 'example' },
     { 'rem', 'remark' },
     { 'nte', 'note' }, -- add note
-    -- { 'eex', 'experiment' }, -- add experiment
+    { 'eex', 'experiment' }, -- add experiment
 }
 
 local wrappings = {
