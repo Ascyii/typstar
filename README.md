@@ -78,7 +78,7 @@ To render the flashcard in your document as well add some code like this
 - Use `:TypstarAnkiScan` to scan the current nvim working directory and compile all flashcards in its context, unchanged files will be ignored
 - Use `:TypstarAnkiForce` to force compilation of all flashcards in the current working directory even if the files haven't changed since the last scan (e.g. on preamble change)
 - Use `:TypstarAnkiForceCurrent` to force compilation of all flashcards in the file currently edited
-- Use `:TypstarAnkiReimport` to also add flashcards that have already been asigned an id but are not currently
+- Use `:TypstarAnkiReimport` to also add flashcards that have already been assigned an id but are not currently
 present in Anki
 - Use `:TypstarAnkiForceReimport` and `:TypstarAnkiForceCurrentReimport` to combine features accordingly
 
@@ -87,7 +87,8 @@ present in Anki
 
 
 ## Installation
-Install the plugin in Neovim (see [Nix instructions](#in-a-nix-flake-optional)) and run the plugin setup.
+Install the plugin in Neovim and run the plugin setup.
+You can install and run a demo installation using [Nix](#in-a-nix-flake-optional)).
 ```lua
 require('typstar').setup({ -- depending on your neovim plugin system
    -- your typstar config goes here
@@ -182,6 +183,8 @@ require('typstar').setup({ -- depending on your neovim plugin system
 4. Make sure the `typstar-anki` command is available in your `PATH` or modify the `typstarAnkiCmd` option in the [config](#configuration)
 
 ### In a Nix Flake (optional)
+To try a minimal demo setup, run `nix run github:arne314/typstar#nvim -- test.typ`. The keybindings are defined [here](./lua/tests/basic_init.lua)
+
 You can add typstar to your `nix-flake` like so
 ```nix
 # `flake.nix`
@@ -196,13 +199,13 @@ inputs = {
 Now you can use `typstar` in any package-set
 ```nix
 with pkgs; [
-  # ... other packges
+  # ... other packages
   (pkgs.vimUtils.buildVimPlugin {
      name = "typstar";
      src = inputs.typstar; 
-     buildInputs = [
-        vimPlugins.luasnip 
-        vimPlugins.nvim-treesitter-parsers.typst
+     buildInputs = with pkgs.vimPlugins; [
+        luasnip
+        nvim-treesitter-parsers.typst
      ];
   })
 ]
@@ -261,4 +264,12 @@ return {
     snip('IFF', '$<<=>>$ ', {}, markup, 2000),
 }
 ```
+
+## Contribution
+
+Feel free to open an issue or a PR.
+For development a nix shell is provided which you can enter via `nix develop`.
+Running `nvim` from within the shell will launch a minimal installation of the plugin.
+The tests can be executed using `just test` from within the shell or via `nix flake check`.
+Run `just --list` for more details.
 
