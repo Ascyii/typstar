@@ -4,6 +4,7 @@ import random
 import re
 import sys
 from pathlib import Path
+from shlex import quote
 from typing import List
 
 from .flashcard import Flashcard
@@ -43,7 +44,7 @@ class TypstCompiler:
         with open(tmp_path, "w", encoding="utf-8") as f:
             f.write(src)
         proc = await asyncio.create_subprocess_shell(
-            f"{self.typst_cmd} compile {tmp_path} - --root {self.typst_root_dir} --format svg",
+            f"{self.typst_cmd} compile {quote(str(tmp_path))} - --root {quote(str(self.typst_root_dir))} --format svg",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
