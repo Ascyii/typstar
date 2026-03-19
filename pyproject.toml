@@ -16,7 +16,8 @@ dependencies = [
     "appdirs>=1.4.4",
     "tree-sitter==0.25.1",
     "typer>=0.15.1",
-    "tree-sitter-typst @ git+https://github.com/uben0/tree-sitter-typst"
+    "tree-sitter-typst @ git+https://github.com/uben0/tree-sitter-typst",
+    "typing-extensions>=4.15.0",
 ]
 
 [project.scripts]
