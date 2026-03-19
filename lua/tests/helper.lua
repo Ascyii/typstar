@@ -18,6 +18,7 @@ function M:setup()
             pre_case = obj.child.restart,
             post_once = obj.child.stop,
         },
+        n_retry = 5,
     })
     obj.child.start({}, { nvim_executable = './lua/tests/nvim_wrapper.sh' })
     return obj
@@ -29,10 +30,25 @@ function M:jump() self.child.cmd('lua require("luasnip").jump(1)') end
 
 function M:jump_back() self.child.cmd('lua require("luasnip").jump(-1)') end
 
-function M:add_cases(name, cases)
+-- fill the luasnip selection variable
+function M:store_selection(text)
+    self:set_buffer(text)
+    self.child.cmd('stopinsert')
+    self.child.type_keys('VG<Tab>')
+    self.child.cmd('stopinsert')
+end
+
+-- add test cases with optional setup function
+function M:add_cases(name, cases, opts)
+    opts = opts or {}
+    opts.setup = opts.setup or function() end
     self.test_set[name] = self.test_set[name] or MiniTest.new_set()
+
     for cname, case in pairs(cases) do
-        self.test_set[name][cname] = case
+        self.test_set[name][cname] = function()
+            opts.setup()
+            case()
+        end
     end
     return self.test_set
 end
