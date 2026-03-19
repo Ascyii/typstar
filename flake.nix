@@ -69,6 +69,15 @@
             pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped config;
           nvimFullBuild = nvimBuild [ typstarPlugin ];
           nvimDevBuild = nvimBuild [ ];
+
+          lintLua = pkgs.writeShellScriptBin "lint-lua" ''
+            ${pkgs.lua-language-server}/bin/lua-language-server --check .
+            ${pkgs.stylua}/bin/stylua --check .
+          '';
+          lintPython = pkgs.writeShellScriptBin "lint-python" ''
+            ${pkgs.ruff}/bin/ruff check .
+            ${pkgs.ruff}/bin/ruff format --diff --check .
+          '';
         in
         {
           checks.default =
@@ -101,6 +110,8 @@
           packages = {
             default = typstarPlugin;
             nvim = nvimFullBuild;
+            lint-lua = lintLua;
+            lint-python = lintPython;
           };
         };
     };
