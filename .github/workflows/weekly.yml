@@ -11,3 +11,18 @@ jobs:
     with:
       update: true
 
+  trigger-test-dev:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Trigger workflow on dev branch
+        run: |
+          gh workflow run weekly.yml --ref dev
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
