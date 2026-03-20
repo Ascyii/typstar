@@ -13,6 +13,7 @@ local lexical_result_cache = {}
 local ts_markup_query = ts.query.parse('typst', '(text) @markup')
 local ts_math_query = ts.query.parse('typst', '(math) @math')
 local ts_string_query = ts.query.parse('typst', '(string) @string')
+local default_wordtrig_pattern = "[%w._']"
 
 utils.generate_bool_set(cfg.exclude, exclude_triggers_set)
 vim.api.nvim_create_autocmd('TextChangedI', {
@@ -28,6 +29,9 @@ end
 M.in_markup = function() return utils.cursor_within_treesitter_query(ts_markup_query, 1, 2) end
 M.not_in_math = function() return not M.in_math() end
 M.not_in_markup = function() return not M.in_markup() end
+M.wordtrig_patterns = {
+    [M.in_math] = '[%w.]',
+}
 M.snippets_toggle = true
 
 function M.snip(trigger, expand, insert, condition, priority, options)
@@ -147,8 +151,9 @@ function M.engine(trigger, opts)
         -- custom word trig
         local from = #line - #whole + 1
         local first_letter = line:sub(from - 1, from - 1)
-        if opts.wordTrig and from ~= 1 and (first_letter:byte(1) > 127 or first_letter:match('[%w._]') ~= nil) then
-            return nil
+        if opts.wordTrig and from ~= 1 then
+            local wordtrig_pattern = M.wordtrig_patterns[opts.condition] or default_wordtrig_pattern
+            if first_letter:byte(1) > 127 or first_letter:match(wordtrig_pattern) ~= nil then return nil end
         end
 
         -- blacklist
