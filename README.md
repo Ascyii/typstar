@@ -266,10 +266,11 @@ return {
 ```
 
 ## Contribution
-
 Feel free to open an issue or a PR.
-For development a nix shell is provided which you can enter via `nix develop`.
-Running `nvim` from within the shell will launch a minimal installation of the plugin.
-The tests can be executed using `just test` from within the shell or via `nix flake check`.
+
+For development, a nix shell is provided, which you can enter via `nix develop`.
+Running `nvim` from within the shell will launch a minimal installation of the plugin, sourced at startup, so no additional nix build is needed.
+Tests can be executed using `just test` from within the shell or via `nix flake check`.
+The code can be linted using `just lint`.
 Run `just --list` for more details.
 
