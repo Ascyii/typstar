@@ -44,7 +44,7 @@ local common_indices = { '\\d+', '[i-n]' }
 -- builtins and calligraphic letters from github.com/lentilus/typst-scribe
 local index_conflicts = { 'Im', 'in', 'ln', 'Pi', 'pi', 'Xi', 'xi', 'Ii', 'Jj', 'Kk', 'Ll', 'Mm', 'Nn' }
 local index_conflicts_set = {}
-local punctuation_prepend_space = { ',', ';' }
+local punctuation_prepend_space = { ',', ';', "'" }
 local punctuation_prepend_space_set = {}
 local trigger_greek = ''
 local trigger_index_pre = ''
@@ -74,11 +74,12 @@ trigger_index_post = table.concat(common_indices, '|')
 
 local get_greek = function(_, snippet) return s(nil, t(greek_letters_map[snippet.captures[1]])) end
 
-local get_index = function(_, snippet, _, idx1, idx2, check_conflict)
-    local letter, index = snippet.captures[idx1], snippet.captures[idx2]
+local get_index = function(_, snippet, _, idx_letter, idx_prime, idx_index, check_conflict)
+    local letter, prime, index = snippet.captures[idx_letter], snippet.captures[idx_prime], snippet.captures[idx_index]
     local trigger = letter .. index
     if check_conflict and index_conflicts_set[trigger] then return s(nil, t(trigger)) end
-    return s(nil, t(letter .. '_' .. index))
+    if snippet.trigger:sub(-1) == "'" then prime = "'" end
+    return s(nil, t(letter .. prime .. '_' .. index))
 end
 
 local get_series = function(_, snippet)
@@ -100,8 +101,10 @@ end
 
 local prepend_space = function(_, snippet, _, idx)
     local punc = snippet.captures[idx]
-    if punctuation_prepend_space_set[punc] then punc = punc .. ' ' end
-    return s(nil, t(punc))
+    local res = punc
+    if punc == "'" then res = '' end
+    if punctuation_prepend_space_set[punc] then res = res .. ' ' end
+    return s(nil, t(res))
 end
 
 return {
@@ -112,20 +115,20 @@ return {
 
     -- indices
     snip(
-        '\\$(' .. trigger_index_pre .. ')\\$' .. ' (' .. trigger_index_post .. ')([^\\w])',
+        '\\$(' .. trigger_index_pre .. ')\\$' .. " ('?)(" .. trigger_index_post .. ')([^\\w])',
         '$<>$<>',
-        { d(1, get_index, {}, { user_args = { 1, 2, false } }), d(2, prepend_space, {}, { user_args = { 3 } }) },
+        { d(1, get_index, {}, { user_args = { 1, 2, 3, false } }), d(2, prepend_space, {}, { user_args = { 4 } }) },
         markup,
         500,
-        { maxTrigLength = 13 }
+        { maxTrigLength = 14 } -- $epsilon$ '123
     ),
     snip(
-        '(' .. trigger_index_pre .. ')' .. '(' .. trigger_index_post .. ')([^\\w])',
+        '(' .. trigger_index_pre .. ')' .. "('?)(" .. trigger_index_post .. ')([^\\w])',
         '<><>',
-        { d(1, get_index, {}, { user_args = { 1, 2, true } }), d(2, prepend_space, {}, { user_args = { 3 } }) },
+        { d(1, get_index, {}, { user_args = { 1, 2, 3, true } }), d(2, prepend_space, {}, { user_args = { 4 } }) },
         math,
         200,
-        { maxTrigLength = 10 } -- epsilon123
+        { maxTrigLength = 11 } -- epsilon'123
     ),
 
     -- series of numbered letters
@@ -135,4 +138,12 @@ return {
 
     -- misc
     snip('(' .. trigger_index_pre .. ')bl', 'B_<> (<>) ', { cap(1), i(1, 'x_0') }, math, 100),
+    snip(
+        '\\$(' .. trigger_index_pre .. ")\\$ '([^\\w])",
+        "$<>'$<>",
+        { cap(1), d(1, prepend_space, {}, { user_args = { 2 } }) },
+        markup,
+        400,
+        { maxTrigLength = 11 } -- $epsilon$ '
+    ),
 }

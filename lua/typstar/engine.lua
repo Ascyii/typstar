@@ -10,7 +10,7 @@ local ts = vim.treesitter
 local exclude_triggers_set = {}
 local last_keystroke_time = nil
 local lexical_result_cache = {}
-local ts_markup_query = ts.query.parse('typst', '(text) @markup')
+local ts_markup_query = ts.query.parse('typst', '[(text) (quote)] @markup')
 local ts_math_query = ts.query.parse('typst', '(math) @math')
 local ts_string_query = ts.query.parse('typst', '(string) @string')
 local default_wordtrig_pattern = "[%w._']"
@@ -26,7 +26,7 @@ M.in_math = function()
         and not utils.cursor_within_treesitter_query(ts_string_query, 0, 0, cursor)
         and M.not_in_markup()
 end
-M.in_markup = function() return utils.cursor_within_treesitter_query(ts_markup_query, 1, 2) end
+M.in_markup = function() return utils.cursor_within_treesitter_query(ts_markup_query, 0, 2) end
 M.not_in_math = function() return not M.in_math() end
 M.not_in_markup = function() return not M.in_markup() end
 M.wordtrig_patterns = {
