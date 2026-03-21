@@ -4,6 +4,9 @@ helper:add_cases('treesitter_markup', {
     ['start'] = function() helper:test_snip('temabc', '#theorem[\n  abc\n]') end,
     ['no_start'] = function() helper:test_snip('1 temabc') end,
     ['no_math'] = function() helper:test_snip('asr') end,
+    ['wordtrig'] = function() helper:test_snip(']ll1', ']$1$') end,
+    ['no_wordtrig'] = function() helper:test_snip('a;a') end,
+    ['no_wordtrig2'] = function() helper:test_snip("I'll") end,
     ['edge'] = function() helper:test_snip('$alpha$;a1 ', '$alpha$$alpha_1$ ') end,
     ['edge2'] = function()
         helper:set_buffer('\\C$alpha$')
@@ -40,9 +43,19 @@ helper:add_cases('treesitter_math', {
     end,
     ['edge'] = function() helper:test_snip_math(';a1 ;a', 'alpha_1 alpha') end,
     ['edge2'] = function() helper:test_snip_math(';a;a', 'alpha;a') end,
-    ['edge3'] = function()
+    ['edge3'] = function() helper:test_snip_math(';a_;b2 ', 'alpha_beta_2 ') end,
+    ['edge4'] = function() helper:test_snip_math(";a'_;b2'", "alpha'_beta'_2 ") end,
+    ['edge5'] = function()
         helper:set_buffer('$\\Calpha$')
         helper:test_snip(';a1 ', '$alpha_1 alpha$')
+    end,
+    ['edge6'] = function()
+        helper:set_buffer('abc$\\Calpha$')
+        helper:test_snip(';a1 ', 'abc$alpha_1 alpha$')
+    end,
+    ['edge7'] = function()
+        helper:set_buffer('abc$alpha\\C$def')
+        helper:test_snip('1 ', 'abc$alpha_1 $def')
     end,
     ['nested'] = function()
         helper:set_buffer('#{$\\C$}')

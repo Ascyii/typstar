@@ -18,6 +18,8 @@ helper:add_cases('visual_postfix', {
     ['long'] = function() helper:test_snip_math('alphaht', 'hat(alpha)') end,
     ['nested'] = function() helper:test_snip_math('artht', 'hat(sqrt(a))') end,
     ['brackets'] = function() helper:test_snip_math('(a)ht', 'hat(a)') end,
+    ['precedence'] = function() helper:test_snip_math('a_alphaht', 'a_hat(alpha)') end,
+    ['precedence2'] = function() helper:test_snip_math('a_b_alphaht', 'a_b_hat(alpha)') end,
 })
 
 helper:add_cases('visual_normal', {
