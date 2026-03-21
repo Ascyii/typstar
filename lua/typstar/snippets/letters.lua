@@ -83,18 +83,23 @@ local get_index = function(_, snippet, _, idx_letter, idx_prime, idx_index, chec
 end
 
 local get_series = function(_, snippet)
-    local letter, target = snippet.captures[1], snippet.captures[2]
-    local target_num = tonumber(target)
+    local letter, start, stop = snippet.captures[1], snippet.captures[2], snippet.captures[3]
+    local start_zero = start == 'z'
+    local target_num = tonumber(stop)
     local result
     if target_num then
         local res = {}
-        for n = 1, target_num do
+        for n = (start_zero and 0 or 1), target_num do
             table.insert(res, string.format('%s_%d', letter, n))
             if n ~= target_num then table.insert(res, ', ') end
         end
         result = table.concat(res, '')
     else
-        result = string.format('%s_1, %s_2, ..., %s_%s', letter, letter, letter, target)
+        if start_zero then
+            result = string.format('%s_0, %s_1, ..., %s_%s', letter, letter, letter, stop)
+        else
+            result = string.format('%s_1, %s_2, ..., %s_%s', letter, letter, letter, stop)
+        end
     end
     return s(nil, t(result))
 end
@@ -132,9 +137,31 @@ return {
     ),
 
     -- series of numbered letters
-    snip('ot(\\w) ', '1, 2, ..., <> ', { cap(1) }, math, 800), -- 1, 2, ..., n
-    snip('(' .. trigger_index_pre .. ') ot ', '<>_1, <>_2, ... ', { cap(1), cap(1) }, math), -- a_1, a_2, ...
-    snip('(' .. trigger_index_pre .. ') ot(\\w+) ', '<> ', { d(1, get_series) }, math, nil, { maxTrigLength = 13 }), -- a_1, a_2, ... a_j or a_1, a_2, a_2, a_3, a_4, a_5
+    snip('([oz])t(\\w) ', '<> ', {
+        d(1, function(_, snippet)
+            local start, stop = snippet.captures[1], snippet.captures[2]
+            local pre = start == 'z' and '0, 1' or '1, 2'
+            return s(nil, t(pre .. ', ..., ' .. stop))
+        end),
+    }, math, 800), -- 1, 2, ..., n
+    snip('(' .. trigger_index_pre .. ') ([oz])t ', '<>, ... ', {
+        d(1, function(_, snippet)
+            local letter, start = snippet.captures[1], snippet.captures[2]
+            if start == 'z' then
+                return s(nil, t(string.format('%s_0, %s_1', letter, letter)))
+            else
+                return s(nil, t(string.format('%s_1, %s_2', letter, letter)))
+            end
+        end),
+    }, math), -- a_1, a_2, ...
+    snip(
+        '(' .. trigger_index_pre .. ') ([oz])t(\\w+) ',
+        '<> ',
+        { d(1, get_series) },
+        math,
+        nil,
+        { maxTrigLength = 13 }
+    ), -- a_1, a_2, ... a_j or a_1, a_2, a_2, a_3, a_4, a_5
 
     -- misc
     snip('(' .. trigger_index_pre .. ')bl', 'B_<> (<>) ', { cap(1), i(1, 'x_0') }, math, 100),
