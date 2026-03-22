@@ -95,6 +95,7 @@ local get_series = function(_, snippet)
         end
         result = table.concat(res, '')
     else
+        if #stop > 1 then return s(nil, t(snippet.trigger:sub(1, -2))) end
         if start_zero then
             result = string.format('%s_0, %s_1, ..., %s_%s', letter, letter, letter, stop)
         else
@@ -137,13 +138,14 @@ return {
     ),
 
     -- series of numbered letters
-    snip('([oz])t(\\w) ', '<> ', {
+    snip('([oz])t(\\w+) ', '<> ', {
         d(1, function(_, snippet)
             local start, stop = snippet.captures[1], snippet.captures[2]
+            if #stop > 1 and not tonumber(stop) then return s(nil, t(snippet.trigger:sub(1, -2))) end
             local pre = start == 'z' and '0, 1' or '1, 2'
             return s(nil, t(pre .. ', ..., ' .. stop))
         end),
-    }, math, 800), -- 1, 2, ..., n
+    }, math, 800, { maxTrigLength = 5 }), -- 1, 2, ..., n
     snip('(' .. trigger_index_pre .. ') ([oz])t ', '<>, ... ', {
         d(1, function(_, snippet)
             local letter, start = snippet.captures[1], snippet.captures[2]
