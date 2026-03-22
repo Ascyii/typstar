@@ -37,15 +37,15 @@ local operations = { -- first boolean: existing brackets should be kept; second 
     { 'ht', 'hat', '', true, true },
     { 'br', 'macron', '', true, true },
     { 'dt', 'dot', '', true, true },
-    { 'dia', 'diaer', '', true, true },
+    { 'dir', 'diaer', '', true, true },
     { 'ci', 'circle', '', true, true },
     { 'td', 'tilde', '', true, true },
     { 'nr', 'norm', '', true, true },
     { 'arw', 'arrow', '', true, true },
     { 'vv', 'vec', '', true, true },
     { 'rt', 'sqrt', '', true, true },
-    { 'flo', 'floor', '', true, true },
-    { 'cei', 'ceil', '', true, true },
+    { 'flr', 'floor', '', true, true },
+    { 'cel', 'ceil', '', true, true },
 }
 
 local ts_wrap_query = ts.query.parse('typst', '[(call) (ident) (letter) (number)] @wrap')
