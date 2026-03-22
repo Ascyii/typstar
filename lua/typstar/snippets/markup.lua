@@ -22,7 +22,7 @@ local ctheorems = {
 }
 
 local wrappings = {
-    { 'll', '$', '$', '1+1' },
+    { 'kk', '$', '$', '1+1' },
     { 'BLD', '*', '*', 'abc' },
     { 'ITL', '_', '_', 'abc' },
     { 'HIG', '#highlight[', ']', 'abc' },

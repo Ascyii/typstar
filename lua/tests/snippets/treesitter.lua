@@ -4,9 +4,9 @@ helper:add_cases('treesitter_markup', {
     ['start'] = function() helper:test_snip('temabc', '#theorem[\n  abc\n]') end,
     ['no_start'] = function() helper:test_snip('1 temabc') end,
     ['no_math'] = function() helper:test_snip('asr') end,
-    ['wordtrig'] = function() helper:test_snip(']ll1', ']$1$') end,
+    ['wordtrig'] = function() helper:test_snip(']kk1', ']$1$') end,
     ['no_wordtrig'] = function() helper:test_snip('a;a') end,
-    ['no_wordtrig2'] = function() helper:test_snip("I'll") end,
+    ['no_wordtrig2'] = function() helper:test_snip("I'kk") end,
     ['edge'] = function() helper:test_snip('$alpha$;a1 ', '$alpha$$alpha_1$ ') end,
     ['edge2'] = function()
         helper:set_buffer('\\C$alpha$')
