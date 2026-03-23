@@ -43,7 +43,7 @@ return {
     snip('xx', 'times ', {}, math),
     snip('oxx', 'times.o ', {}, math),
     snip('bxx', 'times.square ', {}, math),
-    snip('ff', '(<>) / (<>) <>', { i(1, 'a'), i(2, 'b'), i(3) }, math),
+    snip('ff', '(<>) / (<>) ', { i(1, 'a'), i(2, 'b') }, math),
 
     -- subscript/superscript
     snip('iv', '^(-1) ', {}, math, 500, { wordTrig = false, blacklist = { 'equiv' } }),
