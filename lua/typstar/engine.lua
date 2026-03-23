@@ -35,6 +35,7 @@ M.wordtrig_patterns = {
 M.snippets_toggle = true
 
 function M.snip(trigger, expand, insert, condition, priority, options)
+    options = options or {}
     priority = priority or 1000
     options = vim.tbl_deep_extend('force', {
         maxTrigLength = nil,
@@ -42,44 +43,45 @@ function M.snip(trigger, expand, insert, condition, priority, options)
         blacklist = {},
         prepend = nil,
         indentCaptureIdx = nil,
-    }, options or {})
+    }, options)
     if options.prepend ~= nil or options.indentCaptureIdx ~= nil then
         expand, insert = M.blocktransform(expand, insert, options.prepend, options.indentCaptureIdx)
     end
 
-    local callbacks = {}
-    if options and options.callbacks then
+    if options.callbacks then
         for k, v in pairs(options.callbacks) do
-            -- event.pre_expand and post_expand only for callbacks[-1] ?
-            if v.pre then
-                callbacks[k] = {
-                    [events.enter] = options.callbacks[k].pre,
-                }
-            elseif v.post then
-                callbacks[k] = {
-                    [events.leave] = options.callbacks[k].post,
-                }
+            if k == 'pre_expand' then
+                options.callbacks[-1] = { [events.pre_expand] = v }
+                options.pre_expand = nil
+            else
+                if v.pre then
+                    options.callbacks[k][events.enter] = options.callbacks[k].pre
+                    options.callbacks[k].pre = nil
+                end
+                if v.post then
+                    options.callbacks[k][events.leave] = options.callbacks[k].post
+                    options.callbacks[k].post = nil
+                end
             end
         end
     end
-    options.callbacks = nil
 
-    return luasnip.snippet(
-        {
+    local base = options.baseSnip or luasnip.snippet
+    options.baseSnip = nil
+    return base(
+        vim.tbl_deep_extend('force', options.context or {}, {
             trig = trigger,
             trigEngine = M.engine,
-            trigEngineOpts = vim.tbl_deep_extend('keep', {
-                condition = condition,
-            }, options),
+            trigEngineOpts = vim.tbl_deep_extend('force', options, { condition = condition }),
             wordTrig = false,
             priority = priority,
             snippetType = 'autosnippet',
-        },
+        }),
         fmta(expand, { unpack(insert) }),
-        {
+        vim.tbl_deep_extend('force', options.opts or {}, {
             condition = function() return M.snippets_toggle end,
-            callbacks = callbacks,
-        }
+            callbacks = options.callbacks,
+        })
     )
 end
 
