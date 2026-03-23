@@ -90,7 +90,7 @@ return {
     snip('ddx', '(dif <>) / (dif <>) ', { i(1, 'f'), i(2, 'x') }, math),
     snip('DX', 'partial / (partial <>) ', { i(1, 'x') }, math),
     snip('DDX', '(partial <>) / (partial <>) ', { i(1, 'f'), i(2, 'x') }, math),
-    snip('part', 'partial ', {}, math, 1600),
+    snip('part', 'partial ', {}, math, 1800),
 
     -- integrals
     snip('it', 'integral ', {}, math),
