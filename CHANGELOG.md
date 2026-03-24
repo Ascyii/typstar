@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.5.0 - 2026-03-24
+PR #26
+
+### Changed
+- BREAKING: inline math trigger `ll` -> `kk`
+- reduced trigger conflicts in visual snippets
+  (diaer, arrow, floor, ceil now trigger with `dir`, `arw`, `flr` and `cel`)
+
+### Added
+- snippet test engine
+- weekly integration tests with latest (nixpkgs) nvim
+- prime snippets
+- numbered series snippets starting from 0
+- simple plugin update notification
+- config: override any luasnip snippet option
+- config: luasnip callbacks helper
+- docs: better dev workflow documentation
+
+### Fixed
+- node jumping issues
+- a few snippet engine issues
+- Anki package installation issues
+- special characters in Anki paths
+
 ## 1.4.2 - 2025-11-04
 PR #22
 
