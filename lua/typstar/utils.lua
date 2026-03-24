@@ -52,6 +52,31 @@ function M.run_shell_command(cmd, show_output, extra_handler, opts)
     end
 end
 
+function M.show_popup(message, title)
+    local lines = vim.split(message, '\n', { plain = true })
+    local width, height = 1, #lines
+    for _, line in ipairs(lines) do
+        width = math.max(width, vim.fn.strdisplaywidth(line))
+    end
+    width = width
+    local buf = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+    vim.bo[buf].modifiable = false
+    vim.bo[buf].readonly = true
+    vim.bo[buf].buftype = 'nofile'
+    vim.cmd('stopinsert')
+    vim.api.nvim_open_win(buf, true, {
+        title = title,
+        width = width,
+        height = height,
+        relative = 'editor',
+        style = 'minimal',
+        border = 'single',
+        row = math.floor((vim.o.lines - height) / 2),
+        col = math.floor((vim.o.columns - width) / 2),
+    })
+end
+
 function M.count_string(str, tocount)
     local _, count = str:gsub(tocount, '')
     return count

@@ -13,8 +13,9 @@ local notify_plugin_update = function()
     end
 
     if ok and fileok and old_version ~= VERSION then
-        local message = 'Typstar updated to ' .. VERSION .. ', see CHANGELOG.md. ' .. VERSION_INFO
-        vim.notify(message)
+        local message = ('Typstar updated to version %s, see CHANGELOG.md.'):format(VERSION)
+        if VERSION_INFO ~= nil and VERSION_INFO ~= '' then message = message .. '\n' .. VERSION_INFO end
+        utils.show_popup(message, 'Typstar Update')
     end
 end
 
