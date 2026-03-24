@@ -73,6 +73,24 @@ function M.generate_bool_set(arr, target)
     end
 end
 
+function M.read_state_var(name)
+    local file = io.open(vim.fn.stdpath('state') .. '/' .. name, 'r')
+    if not file then return nil, false end
+    local value = file:read('*l')
+    file:close()
+    return value, true
+end
+
+function M.write_state_var(name, value)
+    local file = io.open(vim.fn.stdpath('state') .. '/' .. name, 'w')
+    if file then
+        file:write(value)
+        file:close()
+        return true
+    end
+    return false
+end
+
 function M.get_treesitter_root(bufnr) return ts.get_parser(bufnr):parse()[1]:root() end
 
 function M.treesitter_iter_matches(root, query, bufnr, start, stop)
