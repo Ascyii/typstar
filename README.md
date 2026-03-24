@@ -1,6 +1,10 @@
 # Typstar
 Neovim plugin for efficient (mathematical) note taking in Typst
 
+See changes in [`CHANGELOG.md`](./CHANGELOG.md)
+
+[![Weekly Integration](https://github.com/arne314/typstar/actions/workflows/weekly.yml/badge.svg)](https://github.com/arne314/typstar/actions/workflows/weekly.yml)
+
 ## Features
 - Powerful autosnippets using [LuaSnip](https://github.com/L3MON4D3/LuaSnip/) and [Tree-sitter](https://tree-sitter.github.io/) (inspired by [fastex.nvim](https://github.com/lentilus/fastex.nvim))
 - Easy insertion of drawings using [Obsidian Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) or [Rnote](https://github.com/flxzt/rnote)
@@ -17,13 +21,14 @@ Available snippets can mostly be intuitively derived from [here](././lua/typstar
 Universal snippets:
 - Alphanumeric characters: `:<char>` &#8594; `$<char>$ ` in markup (e.g. `:X` &#8594; `$X$ `, `:5` &#8594; `$5$ `)
 - Greek letters: `;<latin>` &#8594; `<greek>` in math and `$<greek>$ ` in markup (e.g. `;a` &#8594; `alpha`/`$alpha$ `)
-- Common indices (numbers and letters `i-n`): `<letter><index> ` &#8594; `<letter>_<index> ` in math and `$<letter>$ <index> ` &#8594; `$<letter>_<index>$ ` in markup (e.g `A314 ` &#8594; `A_314 `, `$alpha$ n ` &#8594; `$alpha_n$ `)
+- Common indices (numbers and letters `i-n`): `<letter><index> ` &#8594; `<letter>_<index> ` in math and `$<letter>$ <index> ` &#8594; `$<letter>_<index>$ ` in markup (e.g `A314 ` &#8594; `A_314 `, `$alpha$ n ` &#8594; `$alpha_n$ `, `$F$ n,` &#8594; `$F_n$, `, `$F$ n.` &#8594; `$F_n$.`)
+- Primes: `$<letter>$ ' ` &#8594; `$<letter>'$ ` and in combination with index and punctuation like above (e.g. `$phi$ ' ` &#8594; `$phi'$ `, `$phi$ 5'` &#8594; `$phi'_5$ `, `$f$ '5.` &#8594; `$f'_5$.`, `f'5,` &#8594; `f'_5, `)
 
 You can find a complete map of latin to greek letters including reasons for the less intuitive ones [here](./lua/typstar/snippets/letters.lua).
 Note that some greek letters have multiple latin ones mapped to them.
 
 Markup snippets:
-- Begin inline math with `ll` and multiline math with `dm`
+- Begin inline math with `kk` and multiline math with `dm`
 - [Markup shorthands](./lua/typstar/snippets/markup.lua) (e.g. `HIG` &#8594; `#highlight[<cursor>]`, `IMP` &#8594; `$==>$ `)
 - [ctheorems shorthands](./lua/typstar/snippets/markup.lua) (e.g. `tem` &#8594; empty theorem, `exa` &#8594; empty example)
 - [Flashcards](#anki): `fla` and `flA`
@@ -31,7 +36,7 @@ Markup snippets:
 
 Math snippets:
 - [Many shorthands](./lua/typstar/snippets/math.lua) for mathematical expressions
-- Series of numbered letters: `<letter> ot<optional last index> ` &#8594; `<letter>_1, <letter>_2, ... ` (e.g. `a ot ` &#8594; `a_1, a_2, ... `, `a ot4 ` &#8594; `a_1, a_2, a_3, a_4 `, `alpha otk ` &#8594; `alpha_1, alpha_2, ..., alpha_k `, `oti ` &#8594; `1, 2, ..., i `)
+- Series of numbered letters: `<letter> <z/o>t<optional last index> ` &#8594; `<letter>_<0/1>, <letter>_<1/2>, ... ` (e.g. `a ot ` &#8594; `a_1, a_2, ... `, `a zt4 ` &#8594; `a_0, a_1, a_2, a_3, a_4 `, `alpha otk ` &#8594; `alpha_1, alpha_2, ..., alpha_k `, `oti ` &#8594; `1, 2, ..., i `)
 - Wrapping of any mathematical expression (see [operations](./lua/typstar/snippets/visual.lua), works nested, multiline and in visual mode via the [selection key](#installation)): `<expression><operation>` &#8594; `<operation>(<expression>)` (e.g. `(a^2+b^2)rt` &#8594; `sqrt(a^2+b^2)`, `lambdatd` &#8594; `tilde(lambda)`, `(1+1)sQ` &#8594; `[1+1]`, `(1+1)sq` &#8594; `[(1+1)]`)
 - Simple functions: `fo<value> ` &#8594; `f(<value>) ` (e.g. `fox ` &#8594; `f(x) `, `ao5 ` &#8594; `a(5) `)
 - Matrices: `<size>ma` and `<size>lma` (e.g. `23ma` &#8594; 2x3 matrix)
@@ -78,7 +83,7 @@ To render the flashcard in your document as well add some code like this
 - Use `:TypstarAnkiScan` to scan the current nvim working directory and compile all flashcards in its context, unchanged files will be ignored
 - Use `:TypstarAnkiForce` to force compilation of all flashcards in the current working directory even if the files haven't changed since the last scan (e.g. on preamble change)
 - Use `:TypstarAnkiForceCurrent` to force compilation of all flashcards in the file currently edited
-- Use `:TypstarAnkiReimport` to also add flashcards that have already been asigned an id but are not currently
+- Use `:TypstarAnkiReimport` to also add flashcards that have already been assigned an id but are not currently
 present in Anki
 - Use `:TypstarAnkiForceReimport` and `:TypstarAnkiForceCurrentReimport` to combine features accordingly
 
@@ -87,7 +92,8 @@ present in Anki
 
 
 ## Installation
-Install the plugin in Neovim (see [Nix instructions](#in-a-nix-flake-optional)) and run the plugin setup.
+Install the plugin in Neovim and run the plugin setup.
+You can install and run a demo installation using [Nix](#in-a-nix-flake-optional)).
 ```lua
 require('typstar').setup({ -- depending on your neovim plugin system
    -- your typstar config goes here
@@ -137,7 +143,7 @@ require('typstar').setup({ -- depending on your neovim plugin system
         local luasnip = require("luasnip")
         luasnip.config.setup({
             enable_autosnippets = true,
-            store_selection_keys = "<Tab>",
+            cut_selection_keys = "<Tab>",
         })
     end,
 },
@@ -155,7 +161,7 @@ require('typstar').setup({ -- depending on your neovim plugin system
 
 ### Snippets
 0. The snippets are designed to work with Typst `0.14`. For older versions check out the legacy `typst-0.13` branch.
-1. Install [LuaSnip](https://github.com/L3MON4D3/LuaSnip/), set `enable_autosnippets = true` and set a visual mode selection key (e.g. `store_selection_keys = '<Tab>'`) in the configuration
+1. Install [LuaSnip](https://github.com/L3MON4D3/LuaSnip/), set `enable_autosnippets = true` and set a visual mode selection key (e.g. `cut_selection_keys = '<Tab>'`) in the configuration
 2. Install [jsregexp](https://github.com/kmarius/jsregexp) as described [here](https://github.com/L3MON4D3/LuaSnip/blob/master/DOC.md#transformations) (You will see a warning on startup if jsregexp isn't installed properly)
 3. Install [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) and run `:TSInstall typst`
 4. Make sure you haven't remapped `<C-g>`. Otherwise set `add_undo_breakpoints = false` in the [config](#configuration)
@@ -180,6 +186,9 @@ require('typstar').setup({ -- depending on your neovim plugin system
 4. Make sure the `typstar-anki` command is available in your `PATH` or modify the `typstarAnkiCmd` option in the [config](#configuration)
 
 ### In a Nix Flake (optional)
+To try a minimal demo setup, run `nix run github:arne314/typstar#nvim -- test.typ` (200MB download).
+The keybindings are defined [here](./lua/tests/basic_init.lua)
+
 You can add typstar to your `nix-flake` like so
 ```nix
 # `flake.nix`
@@ -194,13 +203,13 @@ inputs = {
 Now you can use `typstar` in any package-set
 ```nix
 with pkgs; [
-  # ... other packges
+  # ... other packages
   (pkgs.vimUtils.buildVimPlugin {
      name = "typstar";
      src = inputs.typstar; 
-     buildInputs = [
-        vimPlugins.luasnip 
-        vimPlugins.nvim-treesitter-parsers.typst
+     buildInputs = with pkgs.vimPlugins; [
+        luasnip
+        nvim-treesitter-parsers.typst
      ];
   })
 ]
@@ -259,4 +268,13 @@ return {
     snip('IFF', '$<<=>>$ ', {}, markup, 2000),
 }
 ```
+
+## Contribution
+Feel free to open an issue or a PR.
+
+For development, a nix shell is provided, which you can enter via `nix develop`.
+Running `nvim` from within the shell will launch a minimal installation of the plugin, sourced at startup, so no additional nix build is needed.
+Tests can be executed using `just test` from within the shell or via `nix flake check`.
+The code can be linted using `just lint`.
+Run `just --list` for more details.
 

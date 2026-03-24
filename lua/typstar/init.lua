@@ -1,7 +1,23 @@
 local M = {}
-
+local luasnip
 local config = require('typstar.config')
-local luasnip = nil
+local VERSION = '1.5.0'
+local VERSION_INFO = 'BREAKING: changed inline math trigger: ll -> kk'
+
+local notify_plugin_update = function()
+    local key = 'typstar_version'
+    local utils = require('typstar.utils')
+    local ok, old_version, fileok = pcall(utils.read_state_var, key)
+    if ok then
+        ok, fileok = pcall(utils.write_state_var, key, VERSION)
+    end
+
+    if ok and fileok and old_version ~= VERSION then
+        local message = ('Typstar updated to version %s, see CHANGELOG.md.'):format(VERSION)
+        if VERSION_INFO ~= nil and VERSION_INFO ~= '' then message = message .. '\n' .. VERSION_INFO end
+        utils.show_popup(message, 'Typstar Update')
+    end
+end
 
 M.setup = function(args)
     config.merge_config(args)
@@ -26,6 +42,7 @@ M.setup = function(args)
     vim.api.nvim_create_user_command('TypstarAnkiForceCurrent', anki.scan_force_current, {})
     vim.api.nvim_create_user_command('TypstarAnkiForceCurrentReimport', anki.scan_force_current_reimport, {})
     autosnippets.setup()
+    vim.defer_fn(notify_plugin_update, 2500)
 end
 
 -- source: https://github.com/lentilus/fastex.nvim

@@ -44,7 +44,7 @@ local common_indices = { '\\d+', '[i-n]' }
 -- builtins and calligraphic letters from github.com/lentilus/typst-scribe
 local index_conflicts = { 'Im', 'in', 'ln', 'Pi', 'pi', 'Xi', 'xi', 'Ii', 'Jj', 'Kk', 'Ll', 'Mm', 'Nn' }
 local index_conflicts_set = {}
-local punctuation_prepend_space = { ',', ';' }
+local punctuation_prepend_space = { ',', ';', "'" }
 local punctuation_prepend_space_set = {}
 local trigger_greek = ''
 local trigger_index_pre = ''
@@ -74,34 +74,43 @@ trigger_index_post = table.concat(common_indices, '|')
 
 local get_greek = function(_, snippet) return s(nil, t(greek_letters_map[snippet.captures[1]])) end
 
-local get_index = function(_, snippet, _, idx1, idx2, check_conflict)
-    local letter, index = snippet.captures[idx1], snippet.captures[idx2]
+local get_index = function(_, snippet, _, idx_letter, idx_prime, idx_index, check_conflict)
+    local letter, prime, index = snippet.captures[idx_letter], snippet.captures[idx_prime], snippet.captures[idx_index]
     local trigger = letter .. index
     if check_conflict and index_conflicts_set[trigger] then return s(nil, t(trigger)) end
-    return s(nil, t(letter .. '_' .. index))
+    if snippet.trigger:sub(-1) == "'" then prime = "'" end
+    return s(nil, t(letter .. prime .. '_' .. index))
 end
 
 local get_series = function(_, snippet)
-    local letter, target = snippet.captures[1], snippet.captures[2]
-    local target_num = tonumber(target)
+    local letter, start, stop = snippet.captures[1], snippet.captures[2], snippet.captures[3]
+    local start_zero = start == 'z'
+    local target_num = tonumber(stop)
     local result
     if target_num then
         local res = {}
-        for n = 1, target_num do
+        for n = (start_zero and 0 or 1), target_num do
             table.insert(res, string.format('%s_%d', letter, n))
             if n ~= target_num then table.insert(res, ', ') end
         end
         result = table.concat(res, '')
     else
-        result = string.format('%s_1, %s_2, ..., %s_%s', letter, letter, letter, target)
+        if #stop > 1 then return s(nil, t(snippet.trigger:sub(1, -2))) end
+        if start_zero then
+            result = string.format('%s_0, %s_1, ..., %s_%s', letter, letter, letter, stop)
+        else
+            result = string.format('%s_1, %s_2, ..., %s_%s', letter, letter, letter, stop)
+        end
     end
     return s(nil, t(result))
 end
 
 local prepend_space = function(_, snippet, _, idx)
     local punc = snippet.captures[idx]
-    if punctuation_prepend_space_set[punc] then punc = punc .. ' ' end
-    return s(nil, t(punc))
+    local res = punc
+    if punc == "'" then res = '' end
+    if punctuation_prepend_space_set[punc] then res = res .. ' ' end
+    return s(nil, t(res))
 end
 
 return {
@@ -112,27 +121,58 @@ return {
 
     -- indices
     snip(
-        '\\$(' .. trigger_index_pre .. ')\\$' .. ' (' .. trigger_index_post .. ')([^\\w])',
+        '\\$(' .. trigger_index_pre .. ')\\$' .. " ('?)(" .. trigger_index_post .. ')([^\\w])',
         '$<>$<>',
-        { d(1, get_index, {}, { user_args = { 1, 2, false } }), d(2, prepend_space, {}, { user_args = { 3 } }) },
+        { d(1, get_index, {}, { user_args = { 1, 2, 3, false } }), d(2, prepend_space, {}, { user_args = { 4 } }) },
         markup,
         500,
-        { maxTrigLength = 13 }
+        { maxTrigLength = 14 } -- $epsilon$ '123
     ),
     snip(
-        '(' .. trigger_index_pre .. ')' .. '(' .. trigger_index_post .. ')([^\\w])',
+        '(' .. trigger_index_pre .. ')' .. "('?)(" .. trigger_index_post .. ')([^\\w])',
         '<><>',
-        { d(1, get_index, {}, { user_args = { 1, 2, true } }), d(2, prepend_space, {}, { user_args = { 3 } }) },
+        { d(1, get_index, {}, { user_args = { 1, 2, 3, true } }), d(2, prepend_space, {}, { user_args = { 4 } }) },
         math,
         200,
-        { maxTrigLength = 10 } -- epsilon123
+        { maxTrigLength = 11 } -- epsilon'123
     ),
 
     -- series of numbered letters
-    snip('ot(\\w) ', '1, 2, ..., <> ', { cap(1) }, math, 800), -- 1, 2, ..., n
-    snip('(' .. trigger_index_pre .. ') ot ', '<>_1, <>_2, ... ', { cap(1), cap(1) }, math), -- a_1, a_2, ...
-    snip('(' .. trigger_index_pre .. ') ot(\\w+) ', '<> ', { d(1, get_series) }, math, nil, { maxTrigLength = 13 }), -- a_1, a_2, ... a_j or a_1, a_2, a_2, a_3, a_4, a_5
+    snip('([oz])t(\\w+) ', '<> ', {
+        d(1, function(_, snippet)
+            local start, stop = snippet.captures[1], snippet.captures[2]
+            if #stop > 1 and not tonumber(stop) then return s(nil, t(snippet.trigger:sub(1, -2))) end
+            local pre = start == 'z' and '0, 1' or '1, 2'
+            return s(nil, t(pre .. ', ..., ' .. stop))
+        end),
+    }, math, 800, { maxTrigLength = 5 }), -- 1, 2, ..., n
+    snip('(' .. trigger_index_pre .. ') ([oz])t ', '<>, ... ', {
+        d(1, function(_, snippet)
+            local letter, start = snippet.captures[1], snippet.captures[2]
+            if start == 'z' then
+                return s(nil, t(string.format('%s_0, %s_1', letter, letter)))
+            else
+                return s(nil, t(string.format('%s_1, %s_2', letter, letter)))
+            end
+        end),
+    }, math), -- a_1, a_2, ...
+    snip(
+        '(' .. trigger_index_pre .. ') ([oz])t(\\w+) ',
+        '<> ',
+        { d(1, get_series) },
+        math,
+        nil,
+        { maxTrigLength = 13 }
+    ), -- a_1, a_2, ... a_j or a_1, a_2, a_2, a_3, a_4, a_5
 
     -- misc
     snip('(' .. trigger_index_pre .. ')bl', 'B_<> (<>) ', { cap(1), i(1, 'x_0') }, math, 100),
+    snip(
+        '\\$(' .. trigger_index_pre .. ")\\$ '([^\\w])",
+        "$<>'$<>",
+        { cap(1), d(1, prepend_space, {}, { user_args = { 2 } }) },
+        markup,
+        400,
+        { maxTrigLength = 11 } -- $epsilon$ '
+    ),
 }

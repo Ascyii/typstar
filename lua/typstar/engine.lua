@@ -1,5 +1,6 @@
 local M = {}
 local cfg = require('typstar.config').config.snippets
+local events = require('luasnip.util.events')
 local luasnip = require('luasnip')
 local utils = require('typstar.utils')
 local fmta = require('luasnip.extras.fmt').fmta
@@ -9,9 +10,10 @@ local ts = vim.treesitter
 local exclude_triggers_set = {}
 local last_keystroke_time = nil
 local lexical_result_cache = {}
-local ts_markup_query = ts.query.parse('typst', '(text) @markup')
+local ts_markup_query = ts.query.parse('typst', '[(text) (quote)] @markup')
 local ts_math_query = ts.query.parse('typst', '(math) @math')
 local ts_string_query = ts.query.parse('typst', '(string) @string')
+local default_wordtrig_pattern = "[%w._']"
 
 utils.generate_bool_set(cfg.exclude, exclude_triggers_set)
 vim.api.nvim_create_autocmd('TextChangedI', {
@@ -24,12 +26,16 @@ M.in_math = function()
         and not utils.cursor_within_treesitter_query(ts_string_query, 0, 0, cursor)
         and M.not_in_markup()
 end
-M.in_markup = function() return utils.cursor_within_treesitter_query(ts_markup_query, 1, 2) end
+M.in_markup = function() return utils.cursor_within_treesitter_query(ts_markup_query, 0, 2) end
 M.not_in_math = function() return not M.in_math() end
 M.not_in_markup = function() return not M.in_markup() end
+M.wordtrig_patterns = {
+    [M.in_math] = '[%w.]',
+}
 M.snippets_toggle = true
 
 function M.snip(trigger, expand, insert, condition, priority, options)
+    options = options or {}
     priority = priority or 1000
     options = vim.tbl_deep_extend('force', {
         maxTrigLength = nil,
@@ -37,23 +43,45 @@ function M.snip(trigger, expand, insert, condition, priority, options)
         blacklist = {},
         prepend = nil,
         indentCaptureIdx = nil,
-    }, options or {})
+    }, options)
     if options.prepend ~= nil or options.indentCaptureIdx ~= nil then
         expand, insert = M.blocktransform(expand, insert, options.prepend, options.indentCaptureIdx)
     end
-    return luasnip.snippet(
-        {
+
+    if options.callbacks then
+        for k, v in pairs(options.callbacks) do
+            if k == 'pre_expand' then
+                options.callbacks[-1] = { [events.pre_expand] = v }
+                options.pre_expand = nil
+            else
+                if v.pre then
+                    options.callbacks[k][events.enter] = options.callbacks[k].pre
+                    options.callbacks[k].pre = nil
+                end
+                if v.post then
+                    options.callbacks[k][events.leave] = options.callbacks[k].post
+                    options.callbacks[k].post = nil
+                end
+            end
+        end
+    end
+
+    local base = options.baseSnip or luasnip.snippet
+    options.baseSnip = nil
+    return base(
+        vim.tbl_deep_extend('force', options.context or {}, {
             trig = trigger,
             trigEngine = M.engine,
-            trigEngineOpts = vim.tbl_deep_extend('keep', { condition = condition }, options),
+            trigEngineOpts = vim.tbl_deep_extend('force', options, { condition = condition }),
             wordTrig = false,
             priority = priority,
             snippetType = 'autosnippet',
-        },
+        }),
         fmta(expand, { unpack(insert) }),
-        {
+        vim.tbl_deep_extend('force', options.opts or {}, {
             condition = function() return M.snippets_toggle end,
-        }
+            callbacks = options.callbacks,
+        })
     )
 end
 
@@ -125,8 +153,9 @@ function M.engine(trigger, opts)
         -- custom word trig
         local from = #line - #whole + 1
         local first_letter = line:sub(from - 1, from - 1)
-        if opts.wordTrig and from ~= 1 and (first_letter:byte(1) > 127 or first_letter:match('[%w._]') ~= nil) then
-            return nil
+        if opts.wordTrig and from ~= 1 then
+            local wordtrig_pattern = M.wordtrig_patterns[opts.condition] or default_wordtrig_pattern
+            if first_letter:byte(1) > 127 or first_letter:match(wordtrig_pattern) ~= nil then return nil end
         end
 
         -- blacklist

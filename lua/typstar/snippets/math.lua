@@ -43,7 +43,7 @@ return {
     snip('xx', 'times ', {}, math),
     snip('oxx', 'times.o ', {}, math),
     snip('bxx', 'times.square ', {}, math),
-    snip('ff', '(<>) / (<>) <>', { i(1, 'a'), i(2, 'b'), i(3) }, math),
+    snip('ff', '(<>) / (<>) ', { i(1, 'a'), i(2, 'b') }, math),
 
     -- subscript/superscript
     snip('iv', '^(-1) ', {}, math, 500, { wordTrig = false, blacklist = { 'equiv' } }),
@@ -83,14 +83,14 @@ return {
         maxTrigLength = 4,
         blacklist = { 'bot ', 'cos ', 'cot ', 'dot ', 'log ', 'mod ', 'not ', 'top ', 'won ', 'xor ' },
     }),
-    snip('(K|M|N|Q|R|S|Z)([\\dn]) ', '<><>^<> ', { cap(1), cap(1), cap(2) }, math),
+    snip('(C|F|K|N|Q|R|S|Z)([\\dn]) ', '<><>^<> ', { cap(1), cap(1), cap(2) }, math),
 
     -- derivatives
     snip('dx', 'dif / (dif <>) ', { i(1, 'x') }, math),
     snip('ddx', '(dif <>) / (dif <>) ', { i(1, 'f'), i(2, 'x') }, math),
     snip('DX', 'partial / (partial <>) ', { i(1, 'x') }, math),
     snip('DDX', '(partial <>) / (partial <>) ', { i(1, 'f'), i(2, 'x') }, math),
-    snip('part', 'partial ', {}, math, 1600),
+    snip('part', 'partial ', {}, math, 1800),
 
     -- integrals
     snip('it', 'integral ', {}, math),
