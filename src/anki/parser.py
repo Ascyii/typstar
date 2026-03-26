@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 import appdirs
-import tree_sitter
+from tree_sitter import Language, Parser, Query, QueryCursor
 from tree_sitter_typst import language as get_typst_language
 
 from .config_parser import RecursiveConfigParser
@@ -39,22 +39,20 @@ deck_regex = re.compile(r"\W+ANKI:\s*([\S ]*)")
 
 
 class FlashcardParser:
-    typst_language: tree_sitter.Language
-    typst_parser: tree_sitter.Parser
-    flashcard_query_cursor: tree_sitter.Query
-    deck_query_cursor: tree_sitter.Query
+    typst_language: Language
+    typst_parser: Parser
+    flashcard_query_cursor: QueryCursor
+    deck_query_cursor: QueryCursor
 
     file_handlers: List[tuple[FileHandler, List[Flashcard]]]
     file_hashes: dict[str, str]
     file_hashes_store_path: Path = Path(appdirs.user_state_dir("typstar") + "/file_hashes.json")
 
     def __init__(self):
-        self.typst_language = tree_sitter.Language(get_typst_language())
-        self.typst_parser = tree_sitter.Parser(self.typst_language)
-        self.flashcard_query_cursor = tree_sitter.QueryCursor(
-            self.typst_language.query(ts_flashcard_query)
-        )
-        self.deck_query_cursor = tree_sitter.QueryCursor(self.typst_language.query(ts_deck_query))
+        self.typst_language = Language(get_typst_language())
+        self.typst_parser = Parser(self.typst_language)
+        self.flashcard_query_cursor = QueryCursor(Query(self.typst_language, ts_flashcard_query))
+        self.deck_query_cursor = QueryCursor(Query(self.typst_language, ts_deck_query))
         self.file_handlers = []
         self._load_file_hashes()
 
