@@ -4,6 +4,7 @@ Neovim plugin for efficient (mathematical) note taking in Typst
 See changes in [`CHANGELOG.md`](./CHANGELOG.md)
 
 [![Weekly Integration](https://github.com/arne314/typstar/actions/workflows/weekly.yml/badge.svg)](https://github.com/arne314/typstar/actions/workflows/weekly.yml)
+[![PyPI version](https://img.shields.io/pypi/v/typstar.svg)](https://pypi.org/project/typstar/)
 
 ## Features
 - Powerful autosnippets using [LuaSnip](https://github.com/L3MON4D3/LuaSnip/) and [Tree-sitter](https://tree-sitter.github.io/) (inspired by [fastex.nvim](https://github.com/lentilus/fastex.nvim))
@@ -93,7 +94,7 @@ present in Anki
 
 ## Installation
 Install the plugin in Neovim and run the plugin setup.
-You can install and run a demo installation using [Nix](#in-a-nix-flake-optional)).
+You can install and run a demo installation using [Nix](#in-a-nix-flake-optional).
 ```lua
 require('typstar').setup({ -- depending on your neovim plugin system
    -- your typstar config goes here
@@ -182,7 +183,7 @@ require('typstar').setup({ -- depending on your neovim plugin system
 ### Anki
 1. Install [Anki](https://apps.ankiweb.net/#download)
 2. Install [Anki-Connect](https://ankiweb.net/shared/info/2055492159) and make sure `http://localhost` is added to `webCorsOriginList` in the Add-on config (should be added by default)
-3. Install the typstar python package (I recommend using [uv](https://docs.astral.sh/uv/) via `uv tool install git+https://github.com/arne314/typstar`, you will need to have python build tools and clang installed) \[Note: this may take a while\]
+3. Install the typstar python package (I recommend using [uv](https://docs.astral.sh/uv/) via `uv tool install typstar`, using [pipx](https://github.com/pypa/pipx) should also work)
 4. Make sure the `typstar-anki` command is available in your `PATH` or modify the `typstarAnkiCmd` option in the [config](#configuration)
 
 ### In a Nix Flake (optional)

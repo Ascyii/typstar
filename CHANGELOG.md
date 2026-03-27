@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.1 - 2026-03-27
+
+### Changed
+- Python package can now be installed from PyPI without any build tools
+
+### Fixed
+- Anki export on Windows
+
 ## 1.5.0 - 2026-03-24
 PR #26
 
