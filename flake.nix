@@ -72,10 +72,12 @@
 
           lintLua = pkgs.writeShellScriptBin "lint-lua" ''
             ${pkgs.lua-language-server}/bin/lua-language-server --check .
+            [ $? == 0 ] || exit 1
             ${pkgs.stylua}/bin/stylua --check .
           '';
           lintPython = pkgs.writeShellScriptBin "lint-python" ''
             ${pkgs.ruff}/bin/ruff check .
+            [ $? == 0 ] || exit 1
             ${pkgs.ruff}/bin/ruff format --diff --check .
           '';
         in
