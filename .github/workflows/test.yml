@@ -14,3 +14,9 @@ jobs:
       command: nix flake check --print-build-logs --all-systems
       update: ${{ inputs.update }}
 
+  test-lazy:
+    uses: ./.github/workflows/setup-nix.yml
+    with:
+      command: nix develop .#lazy --command just test-lazy
+      update: ${{ inputs.update }}
+
