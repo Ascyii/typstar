@@ -9,22 +9,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: nixbuild/nix-quick-install-action@v34
-
-      - name: Use latest nvim
-        if: ${{ inputs.update }}
-        run: nix flake update nixpkgs
-
-      - name: Use cache
-        if: ${{ ! inputs.update }}
-        uses: nix-community/cache-nix-action@v7
-        with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
-
-      - run: nix flake check --print-build-logs --all-systems
+    uses: ./.github/workflows/setup-nix.yml
+    with:
+      command: nix flake check --print-build-logs --all-systems
+      update: ${{ inputs.update }}
 

@@ -5,22 +5,12 @@ on:
 
 jobs:
   lint-lua:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: nixbuild/nix-quick-install-action@v34
-
-      - run: nix run .#lint-lua
+    uses: ./.github/workflows/setup-nix.yml
+    with:
+      command: nix run .#lint-lua
 
   lint-python:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: nixbuild/nix-quick-install-action@v34
-
-      - run: nix run .#lint-python
+    uses: ./.github/workflows/setup-nix.yml
+    with:
+      command: nix run .#lint-python
 
