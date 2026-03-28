@@ -97,17 +97,30 @@
                 cd $src
                 nvim --headless -c "lua MiniTest.run()"
               '';
-          devShells.default = pkgs.mkShell {
-            packages = [
-              nvimDevBuild
-              pkgs.uv
-              pkgs.just
-            ];
-            shellHook = # Bash
-              ''
-                uv sync --locked
-                export NVIM_PLUGIN_DEV=$(pwd)
-              '';
+          devShells = {
+            default = pkgs.mkShell {
+              packages = [
+                nvimDevBuild
+                pkgs.uv
+                pkgs.just
+              ];
+              shellHook = # Bash
+                ''
+                  uv sync --locked
+                  export NVIM_PLUGIN_DEV=$(pwd)
+                '';
+            };
+            lazy = pkgs.mkShell {
+              packages = with pkgs; [
+                just
+                neovim
+                tree-sitter
+              ];
+              shellHook = # Bash
+                ''
+                  just lazy --headless -c "q"
+                '';
+            };
           };
           packages = {
             default = typstarPlugin;

@@ -1,9 +1,16 @@
+# python
 .venv
 **/__pycache__
 
+# obsidian & rnote
 .obsidian
 assets
 
+# lazy
+lazy_temp
+.nvimlog
+
+# flake
 result
 *.pdf
 test.typ
