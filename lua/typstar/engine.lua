@@ -171,12 +171,22 @@ function M.toggle_autosnippets()
     print(string.format('%sabled typstar autosnippets', M.snippets_toggle and 'En' or 'Dis'))
 end
 
+local get_jsregexp = function()
+    local ok, jsregexp = pcall(require, 'luasnip-jsregexp')
+    if not ok then
+        ok, jsregexp = pcall(require, 'jsregexp')
+    end
+    return ok, jsregexp
+end
+
+function M.jsregexp_ok()
+    local ok, _ = get_jsregexp()
+    return ok
+end
+
 function M.setup()
     if cfg.enable then
-        local jsregexp_ok, jsregexp = pcall(require, 'luasnip-jsregexp')
-        if not jsregexp_ok then
-            jsregexp_ok, jsregexp = pcall(require, 'jsregexp')
-        end
+        local jsregexp_ok, jsregexp = get_jsregexp()
         if jsregexp_ok then
             if type(alts_regex) == 'string' then alts_regex = jsregexp.compile_safe(alts_regex) end
         else
