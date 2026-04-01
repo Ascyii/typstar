@@ -94,7 +94,8 @@ present in Anki
 
 ## Installation
 Install the plugin in Neovim and run the plugin setup.
-You can install and run a demo installation using [Nix](#in-a-nix-flake-optional).
+To run a demo installation, see [Demo](#demo).
+To use Nix for installation, see [Nix](#in-a-nix-flake-optional).
 ```lua
 require('typstar').setup({ -- depending on your neovim plugin system
    -- your typstar config goes here
@@ -186,11 +187,18 @@ require('typstar').setup({ -- depending on your neovim plugin system
 3. Install the typstar python package (I recommend using [uv](https://docs.astral.sh/uv/) via `uv tool install typstar`, using [pipx](https://github.com/pypa/pipx) should also work)
 4. Make sure the `typstar-anki` command is available in your `PATH` or modify the `typstarAnkiCmd` option in the [config](#configuration)
 
-### In a Nix Flake (optional)
-To try a minimal demo setup, run `nix run github:arne314/typstar#nvim -- test.typ` (200MB download).
-The keybindings are defined [here](./lua/tests/basic_init.lua)
+### Demo
+A basic demo setup using either Nix or Lazy is provided.
+The keybindings are defined [here](./lua/tests/basic_init.lua).
 
-You can add typstar to your `nix-flake` like so
+For Nix: Run `nix run github:arne314/typstar#nvim -- test.typ` (~200MB download).
+
+For Lazy: Clone the repo with `git clone https://github.com/arne314/typstar.git` and run
+`just lazy` if you have just installed or run `./res/lazy/lazy.sh test.typ` if you don't.
+You will need to have `nvim` and `tree-sitter` available in your `PATH`.
+
+### In a Nix Flake (optional)
+You can add typstar to your nix flake like so
 ```nix
 # `flake.nix`
 inputs = {
@@ -273,9 +281,13 @@ return {
 ## Contribution
 Feel free to open an issue or a PR.
 
-For development, a nix shell is provided, which you can enter via `nix develop`.
+For development with Nix, a shell is provided, which you can enter via `nix develop`.
 Running `nvim` from within the shell will launch a minimal installation of the plugin, sourced at startup, so no additional nix build is needed.
 Tests can be executed using `just test` from within the shell or via `nix flake check`.
 The code can be linted using `just lint`.
+
+For development without Nix, run `just lazy` for a local lazy installation which sources the plugin on startup.
+To run tests in lazy, run `just test-lazy`.
+
 Run `just --list` for more details.
 
