@@ -71,13 +71,13 @@
           nvimDevBuild = nvimBuild [ ];
 
           lintLua = pkgs.writeShellScriptBin "lint-lua" ''
+            set -e
             ${pkgs.lua-language-server}/bin/lua-language-server --check .
-            [ $? == 0 ] || exit 1
             ${pkgs.stylua}/bin/stylua --check .
           '';
           lintPython = pkgs.writeShellScriptBin "lint-python" ''
+            set -e
             ${pkgs.ruff}/bin/ruff check .
-            [ $? == 0 ] || exit 1
             ${pkgs.ruff}/bin/ruff format --diff --check .
           '';
         in
@@ -107,6 +107,7 @@
               shellHook = # Bash
                 ''
                   uv sync --locked
+                  source .venv/bin/activate
                   export NVIM_PLUGIN_DEV=$(pwd)
                 '';
             };
