@@ -46,6 +46,9 @@ local operations = { -- first boolean: existing brackets should be kept; second 
     { 'rt', 'sqrt', '', true, true },
     { 'flr', 'floor', '', true, true },
     { 'cel', 'ceil', '', true, true },
+    { 'rab', 'bra', '', true, true}, -- add bra
+    { 'ket', 'ket', '', true, true}, -- add ket
+    { 'erw', 'expval', '', true, true},
 }
 
 local smart_wrap = function(_, snippet, _, user_args)
