@@ -71,7 +71,15 @@ return {
     snip('swo', 'without ', {}, math),
     snip('ni', 'in.not ', {}, math),
 
+    -- physics
+    snip('rake', 'lr(chevron.l <> | <> chevron.r)', {i(1, 'a'), i(2, 'b')}, math), -- add braket
+    snip('drake', 'lr(chevron.l <> | <> | <> chevron.r)', {i(1, 'a'), i(2, 'b'), i(3, 'c')}, math), -- add matrix element
+
     -- misc
+    snip('nl', '\\\n<>', {i(1)}, math), -- add newline
+    snip('mm', '- ', {}, math), -- add useful binds
+    snip('pl', '+ ', {}, math),
+    snip('nx', ', space ', {}, math), -- add equation inline delimeter
     snip('to', '->> ', {}, math),
     snip('mt', '|->> ', {}, math),
     snip('cp', 'compose ', {}, math),
