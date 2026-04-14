@@ -72,8 +72,8 @@ return {
     snip('ni', 'in.not ', {}, math),
 
     -- physics
-    snip('rake', 'lr(chevron.l <> | <> chevron.r)', {i(1, 'a'), i(2, 'b')}, math), -- add braket
-    snip('drake', 'lr(chevron.l <> | <> | <> chevron.r)', {i(1, 'a'), i(2, 'b'), i(3, 'c')}, math), -- add matrix element
+    snip('rake', 'lr(angle.l <> | <> angle.r)', {i(1, 'a'), i(2, 'b')}, math), -- add braket
+    snip('drake', 'lr(angle.l <> | <> | <> angle.r)', {i(1, 'a'), i(2, 'b'), i(3, 'c')}, math), -- add matrix element
 
     -- misc
     snip('nl', '\\\n<>', {i(1)}, math), -- add newline
