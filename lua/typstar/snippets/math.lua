@@ -79,6 +79,8 @@ return {
     snip('nl', '\\\n<>', {i(1)}, math), -- add newline
     snip('mm', '- ', {}, math), -- add useful binds
     snip('pl', '+ ', {}, math),
+    snip('lank', 'planck ', {}, math),
+    snip('delt', 'Delta ', {}, math),
     snip('nx', ', space ', {}, math), -- add equation inline delimeter
     snip('to', '->> ', {}, math),
     snip('mt', '|->> ', {}, math),
