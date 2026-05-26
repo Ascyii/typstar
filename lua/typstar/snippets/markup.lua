@@ -49,6 +49,7 @@ return {
     helper.list_snip('dm', '\n$\n\t<>\n$', { helper.visual(1) }, markup, 1100, { prepend = '\t' }),
     start('fla', '#flashcard(0)[<>][\n<>\n<>]', { i(1, 'flashcard'), indent_visual(2), cap(1) }, markup),
     start('flA', '#flashcard(0, "<>")[\n<>\n<>]', { i(1, 'flashcard'), indent_visual(2), cap(1) }, markup),
+    snip('tto', '$->>$ ', {}, markup),
     snip('IMP', '$==>>$ ', {}, markup),
     snip('IFF', '$<<==>>$ ', {}, markup),
     unpack(document_snippets),

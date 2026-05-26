@@ -78,6 +78,7 @@ return {
     -- misc
     snip('nl', '\\\n<>', {i(1)}, math), -- add newline
     snip('ta', 'star ', {}, math), -- cannot type star otherwise
+    snip('tn', 'tan ', {}, math), -- cannot type tan with star
     snip('mm', '- ', {}, math), -- add useful binds
     snip('pl', '+ ', {}, math),
     snip('lank', 'planck ', {}, math),

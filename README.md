@@ -267,6 +267,7 @@ local markup = tp.in_markup
 return {
     -- add a new snippet (the old one is excluded via the config)
     snip('imp', '=>> ', {}, math),
+    snip('tto', '->> ', {}, math),
 
     -- override existing triggers by setting a high priority
     snip('ib', '<<= ', {}, math, 2000),
