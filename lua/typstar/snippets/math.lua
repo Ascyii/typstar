@@ -83,6 +83,7 @@ return {
     snip('lank', 'planck ', {}, math),
     snip('delt', 'Delta ', {}, math),
     snip('nx', ', space ', {}, math), -- add equation inline delimeter
+    snip('sa', 'space ', {}, math), -- space cannot be typed otherwise
     snip('to', '->> ', {}, math),
     snip('mt', '|->> ', {}, math),
     snip('cp', 'compose ', {}, math),
